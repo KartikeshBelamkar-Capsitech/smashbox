@@ -1,0 +1,172 @@
+[gd_scene format=3 uid="uid://b1yh1xd26pmia"]
+
+[ext_resource type="PackedScene" uid="uid://cxc81kt3wohlk" path="res://scenes/cannon.tscn" id="1_u61dc"]
+[ext_resource type="PackedScene" uid="uid://bm0h2hm75ufq8" path="res://scenes/cylinder.tscn" id="2_7snfr"]
+[ext_resource type="PackedScene" uid="uid://dav7mvbkhsx81" path="res://scenes/box-medium.tscn" id="3_ene4w"]
+[ext_resource type="PackedScene" uid="uid://bsubs18a8g6no" path="res://scenes/Triangle.tscn" id="3_u61dc"]
+[ext_resource type="PackedScene" uid="uid://b6c4al234gvpl" path="res://scenes/box.tscn" id="4_h6r4t"]
+[ext_resource type="PackedScene" uid="uid://dwakhpu7eglvv" path="res://scenes/TrianglePlus.tscn" id="5_7snfr"]
+[ext_resource type="Script" path="res://scripts/level_ui.gd" id="5_w2i51"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+sky_top_color = Color(0.38, 0.65, 0.98, 1)
+sky_horizon_color = Color(0.72, 0.82, 0.94, 1)
+ground_bottom_color = Color(0.12, 0.14, 0.18, 1)
+ground_horizon_color = Color(0.5, 0.55, 0.65, 1)
+
+[sub_resource type="Sky" id="Sky_env"]
+sky_material = SubResource("ProceduralSkyMaterial_sky")
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 2
+sky = SubResource("Sky_env")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_platform"]
+size = Vector3(4.2, 12, 1.1513672)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_platform"]
+albedo_color = Color(0.2, 0.22, 0.26, 1)
+metallic = 0.3
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="BoxMesh_platform"]
+material = SubResource("StandardMaterial3D_platform")
+size = Vector3(4.2, 12, 3.5)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_floor"]
+
+[node name="Level3" type="Node3D" unique_id=916925550]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=118067944]
+environment = SubResource("Environment_main")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1935274939]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 15, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1915778407]
+transform = Transform3D(1, 0, 0, 0, 0.9702958, 0.24192195, 0, -0.24192195, 0.9702958, 0, 7.930943, 0.7371763)
+keep_aspect = 0
+current = true
+fov = 68.0
+
+[node name="Cannon" parent="." unique_id=1194249846 instance=ExtResource("1_u61dc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.774109, 0)
+
+[node name="BoxPlatform" type="StaticBody3D" parent="." unique_id=1628706899]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.3303242, -12)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BoxPlatform" unique_id=1452897833]
+transform = Transform3D(2.9083965, 1.509958e-07, 0, -4.3915566e-07, 1, 0, 0, 0, -3.3621898, 0, 0, 0)
+shape = SubResource("BoxShape3D_platform")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="BoxPlatform" unique_id=1688347957]
+transform = Transform3D(2.7416167, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0, 9.536743e-07, 0)
+mesh = SubResource("BoxMesh_platform")
+
+[node name="FloorPlane" type="MeshInstance3D" parent="." unique_id=1370954612]
+transform = Transform3D(20.781864, 0, 0, 0, 1, 0, 0, 0, -21.071466, 0, 0, -6.725843)
+mesh = SubResource("PlaneMesh_floor")
+
+[node name="BoxStack" type="Node3D" parent="." unique_id=381629401]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.669676, -11.98)
+
+[node name="Cylinder" parent="BoxStack" unique_id=1237817233 instance=ExtResource("2_7snfr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6134467, 1.0070734, 0)
+
+[node name="Cylinder2" parent="BoxStack" unique_id=486128682 instance=ExtResource("2_7snfr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.982575, 0.9177904, 0)
+
+[node name="Cylinder3" parent="BoxStack" unique_id=655870729 instance=ExtResource("2_7snfr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9957223, 2.9242506, 0)
+
+[node name="Cylinder4" parent="BoxStack" unique_id=633597262 instance=ExtResource("2_7snfr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6218004, 3.0237055, 0)
+
+[node name="Triangle" parent="BoxStack" unique_id=18766210 instance=ExtResource("3_u61dc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6076498, 4.4907618, -0.06671238)
+
+[node name="Triangle2" parent="BoxStack" unique_id=1922022560 instance=ExtResource("3_u61dc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9430814, 4.4054956, -0.045020103)
+
+[node name="Box" parent="BoxStack" unique_id=1046794428 instance=ExtResource("3_ene4w")]
+transform = Transform3D(1.9106855e-15, 4.371139e-08, 1, 1, -4.371139e-08, 0, 4.371139e-08, 1, -4.371139e-08, -1.5850893, 1.0906906, 0)
+
+[node name="Box2" parent="BoxStack" unique_id=303494390 instance=ExtResource("3_ene4w")]
+transform = Transform3D(1.9106855e-15, 4.371139e-08, 1, 1, -4.371139e-08, 0, 4.371139e-08, 1, -4.371139e-08, 1.8155731, 1.0906906, 0)
+
+[node name="Triangle3" parent="BoxStack" unique_id=1182714902 instance=ExtResource("5_7snfr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.038234234, 4.2126837, 0)
+
+[node name="Box3" parent="BoxStack" unique_id=754373297 instance=ExtResource("4_h6r4t")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.47284174, 0)
+
+[node name="LevelUI" type="CanvasLayer" parent="." unique_id=361583710]
+script = ExtResource("5_w2i51")
+level_title = "Level 3 (Mixed Fortress)"
+prev_scene_path = "res://scenes/levels/level_2.tscn"
+
+[node name="Control" type="Control" parent="LevelUI" unique_id=1202162757]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TitleLabel" type="Label" parent="LevelUI/Control" unique_id=965327242]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -250.0
+offset_top = 28.0
+offset_right = 250.0
+offset_bottom = 68.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 22
+text = "Level 3 (Mixed Fortress)"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NextButton" type="Button" parent="LevelUI/Control" unique_id=2062230300]
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -150.0
+offset_top = 28.0
+offset_right = -24.0
+offset_bottom = 72.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 18
+text = "Next >"
+
+[node name="PrevButton" type="Button" parent="LevelUI/Control" unique_id=374610497]
+layout_mode = 1
+offset_left = 24.0
+offset_top = 28.0
+offset_right = 150.0
+offset_bottom = 72.0
+theme_override_font_sizes/font_size = 18
+text = "< Prev"
+
+[node name="RestartButton" type="Button" parent="LevelUI/Control" unique_id=354861073]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -70.0
+offset_top = -75.0
+offset_right = 70.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 16
+text = "Restart"
