@@ -107,6 +107,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 4.95, 0)
 script = ExtResource("4_level_ui")
 level_title = "Level 3 (Mixed Fortress)"
 prev_scene_path = "res://scenes/levels/level_2.tscn"
+next_scene_path = "res://scenes/levels/level_4.tscn"
 
 [node name="Control" type="Control" parent="LevelUI"]
 layout_mode = 3
