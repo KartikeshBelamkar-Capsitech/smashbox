@@ -1,0 +1,210 @@
+[gd_scene format=3 uid="uid://bafsjjahxijfk"]
+
+[ext_resource type="PackedScene" path="res://scenes/cannon.tscn" id="1_4t8k6"]
+[ext_resource type="PackedScene" path="res://scenes/box.tscn" id="2_ku6r7"]
+[ext_resource type="PackedScene" uid="uid://dav7mvbkhsx81" path="res://scenes/box-medium.tscn" id="3_hi6ks"]
+[ext_resource type="Script" uid="uid://cb435mwq2jsku" path="res://scripts/level_ui.gd" id="100_level_ui"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+sky_top_color = Color(0.38, 0.65, 0.98, 1)
+sky_horizon_color = Color(0.72, 0.82, 0.94, 1)
+ground_bottom_color = Color(0.12, 0.14, 0.18, 1)
+ground_horizon_color = Color(0.5, 0.55, 0.65, 1)
+
+[sub_resource type="Sky" id="Sky_env"]
+sky_material = SubResource("ProceduralSkyMaterial_sky")
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 2
+sky = SubResource("Sky_env")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_platform"]
+size = Vector3(4.2, 12, 1.1513672)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_platform"]
+albedo_color = Color(0.2, 0.22, 0.26, 1)
+metallic = 0.3
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="BoxMesh_platform"]
+material = SubResource("StandardMaterial3D_platform")
+size = Vector3(4.2, 12, 3.5)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ground"]
+
+[node name="Level4" type="Node3D" unique_id=2070883059]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1095448412]
+environment = SubResource("Environment_main")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=50005316]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 15, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=2033923004]
+transform = Transform3D(1, 0, 0, 0, 0.9702958, 0.24192195, 0, -0.24192195, 0.9702958, 0, 7.930943, 0.7371763)
+keep_aspect = 0
+current = true
+fov = 68.0
+
+[node name="Cannon" parent="." unique_id=1796731285 instance=ExtResource("1_4t8k6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.774109, 0)
+
+[node name="BoxPlatform" type="StaticBody3D" parent="." unique_id=150990612]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.3303242, -12)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BoxPlatform" unique_id=604264066]
+transform = Transform3D(2.9083965, 1.509958e-07, 0, -4.3915566e-07, 1, 0, 0, 0, -3.3621898, 0, 0, 0)
+shape = SubResource("BoxShape3D_platform")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="BoxPlatform" unique_id=328359888]
+transform = Transform3D(2.7416167, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0, 9.536743e-07, 0)
+mesh = SubResource("BoxMesh_platform")
+
+[node name="BoxStack" type="Node3D" parent="." unique_id=1017611058]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1371408, 4.669676, -11.98)
+
+[node name="Box_L1_1" parent="BoxStack" unique_id=1530350981 instance=ExtResource("2_ku6r7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.16, 2.243, 0)
+
+[node name="Box_L1_2" parent="BoxStack" unique_id=1975626723 instance=ExtResource("2_ku6r7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3, 0.409, -0.011)
+
+[node name="Box_L1_3" parent="BoxStack" unique_id=673799847 instance=ExtResource("2_ku6r7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3, 1.295, 0)
+
+[node name="Box_L1_4" parent="BoxStack" unique_id=745960183 instance=ExtResource("2_ku6r7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15674448, 0.4499998, 0)
+
+[node name="Box_L2_1" parent="BoxStack" unique_id=191105600 instance=ExtResource("2_ku6r7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3, 2.112, 0)
+
+[node name="Box_L2_2" parent="BoxStack" unique_id=366186629 instance=ExtResource("2_ku6r7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.16, 1.35, 0)
+
+[node name="BoxMedium_L2_3" parent="BoxStack" unique_id=1839027282 instance=ExtResource("3_hi6ks")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.076613, 3.0296926, 0)
+
+[node name="BoxMedium_L2_4" parent="BoxStack" unique_id=1046794428 instance=ExtResource("3_hi6ks")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0551147, 4.7996607, 0)
+
+[node name="Box_L3_1" parent="BoxStack" unique_id=34589523 instance=ExtResource("2_ku6r7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.66056395, 0.41514778, 0)
+
+[node name="BoxMedium_L3_3" parent="BoxStack" unique_id=870287535 instance=ExtResource("3_hi6ks")]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 3.2, 1.093, 0)
+
+[node name="BoxMedium_L3_6" parent="BoxStack" unique_id=495473241 instance=ExtResource("3_hi6ks")]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 3.2, 3.3165827, 0)
+
+[node name="BoxMedium_L3_4" parent="BoxStack" unique_id=1931346996 instance=ExtResource("3_hi6ks")]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, -1.05, 1.093, 0)
+
+[node name="BoxMedium_L3_5" parent="BoxStack" unique_id=1254260774 instance=ExtResource("3_hi6ks")]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, -1.05, 3.34, 0)
+
+[node name="Box_L4_1" parent="BoxStack" unique_id=1136419987 instance=ExtResource("2_ku6r7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45681, 0.39224195, 0)
+
+[node name="Box_L4_2" parent="BoxStack" unique_id=373101236 instance=ExtResource("2_ku6r7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.36190176, 3.9149065, 0)
+
+[node name="Box_L4_3" parent="BoxStack" unique_id=1695183740 instance=ExtResource("2_ku6r7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.7438912, 3.9300318, 0)
+
+[node name="Box_L4_4" parent="BoxStack" unique_id=179534457 instance=ExtResource("2_ku6r7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.05, 4.918, 0)
+
+[node name="Box_L4_5" parent="BoxStack" unique_id=1118924010 instance=ExtResource("2_ku6r7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 4.882, 0)
+
+[node name="Box_L4_6" parent="BoxStack" unique_id=1004469192 instance=ExtResource("2_ku6r7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0636494, 5.705509, 0)
+
+[node name="UI#Instructions" type="Label" parent="." unique_id=1872043371]
+visible = false
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -220.0
+offset_top = 24.0
+offset_right = 220.0
+offset_bottom = 60.0
+grow_horizontal = 2
+text = "Aim with Mouse  |  Left Click to Shoot and Knock Boxes Off!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Ground" type="MeshInstance3D" parent="." unique_id=1379439226]
+transform = Transform3D(20.781864, 0, 0, 0, 1, 0, 0, 0, -21.071466, 0, 0, -6.725843)
+mesh = SubResource("PlaneMesh_ground")
+
+[node name="LevelUI" type="CanvasLayer" parent="." unique_id=1131449456]
+script = ExtResource("100_level_ui")
+level_title = "Level 6"
+prev_scene_path = "res://scenes/levels/level_5.tscn"
+
+[node name="Control" type="Control" parent="LevelUI" unique_id=1026593580]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TitleLabel" type="Label" parent="LevelUI/Control" unique_id=2005718097]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -250.0
+offset_top = 28.0
+offset_right = 250.0
+offset_bottom = 68.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 22
+text = "Level 6"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NextButton" type="Button" parent="LevelUI/Control" unique_id=1699052871]
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -150.0
+offset_top = 28.0
+offset_right = -24.0
+offset_bottom = 72.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 18
+text = "Next >"
+
+[node name="PrevButton" type="Button" parent="LevelUI/Control" unique_id=1063792377]
+layout_mode = 1
+offset_left = 24.0
+offset_top = 28.0
+offset_right = 150.0
+offset_bottom = 72.0
+theme_override_font_sizes/font_size = 18
+text = "< Prev"
+
+[node name="RestartButton" type="Button" parent="LevelUI/Control" unique_id=750593355]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -70.0
+offset_top = -75.0
+offset_right = 70.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 16
+text = "Restart"
