@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://b6c4al234gvpl"]
+[gd_scene format=3 uid="uid://dav7mvbkhsx81"]
 
 [ext_resource type="Script" uid="uid://blxehi6455pde" path="res://scripts/box_target.gd" id="1_box_script"]
 
@@ -17,16 +17,22 @@ roughness = 0.65
 material = SubResource("StandardMaterial3D_box")
 size = Vector3(0.9, 0.9, 0.9)
 
-[node name="Box" type="RigidBody3D" unique_id=373101236]
-mass = 8.0
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3inec"]
+albedo_color = Color(0.8600602, 0, 0.13646477, 1)
+
+[node name="Box" type="RigidBody3D" unique_id=1046794428]
+mass = 12.0
 physics_material_override = SubResource("PhysicsMaterial_box")
 continuous_cd = true
 linear_damp = 0.6
 angular_damp = 1.0
 script = ExtResource("1_box_script")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1575473433]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1093648775]
+transform = Transform3D(2.5, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 shape = SubResource("BoxShape3D_box")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1530529136]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1603954970]
+transform = Transform3D(2.5, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 mesh = SubResource("BoxMesh_box")
+surface_material_override/0 = SubResource("StandardMaterial3D_3inec")
