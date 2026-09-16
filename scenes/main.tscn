@@ -1,0 +1,93 @@
+[gd_scene format=3 uid="uid://cbtyshej6mg0j"]
+
+[ext_resource type="PackedScene" path="res://scenes/cannon.tscn" id="1_cannon_scene"]
+[ext_resource type="PackedScene" path="res://scenes/box.tscn" id="2_box_scene"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+sky_top_color = Color(0.38, 0.65, 0.98, 1)
+sky_horizon_color = Color(0.72, 0.82, 0.94, 1)
+ground_bottom_color = Color(0.12, 0.14, 0.18, 1)
+ground_horizon_color = Color(0.5, 0.55, 0.65, 1)
+
+[sub_resource type="Sky" id="Sky_env"]
+sky_material = SubResource("ProceduralSkyMaterial_sky")
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 2
+sky = SubResource("Sky_env")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_platform"]
+size = Vector3(4.2, 12, 3.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_platform"]
+albedo_color = Color(0.2, 0.22, 0.26, 1)
+metallic = 0.3
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="BoxMesh_platform"]
+material = SubResource("StandardMaterial3D_platform")
+size = Vector3(4.2, 12, 3.5)
+
+[node name="Main" type="Node3D" unique_id=1808376263]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1880150098]
+environment = SubResource("Environment_main")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1821440948]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 15, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1373167801]
+transform = Transform3D(1, 0, 0, 0, 0.98057735, 0.1961328, 0, -0.1961328, 0.98057735, 0, 3.0074792, 0.9526882)
+current = true
+fov = 60.0
+
+[node name="Cannon" parent="." unique_id=759202943 instance=ExtResource("1_cannon_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+
+[node name="BoxPlatform" type="StaticBody3D" parent="." unique_id=978535717]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -6, -12)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BoxPlatform" unique_id=590483401]
+shape = SubResource("BoxShape3D_platform")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="BoxPlatform" unique_id=1980797]
+mesh = SubResource("BoxMesh_platform")
+
+[node name="BoxStack" type="Node3D" parent="." unique_id=214883870]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -12)
+
+[node name="Box_L1_1" parent="BoxStack" unique_id=1621311217 instance=ExtResource("2_box_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.45, 0)
+
+[node name="Box_L1_2" parent="BoxStack" unique_id=1246367118 instance=ExtResource("2_box_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+
+[node name="Box_L1_3" parent="BoxStack" unique_id=1622355344 instance=ExtResource("2_box_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.45, 0)
+
+[node name="Box_L2_1" parent="BoxStack" unique_id=1765663908 instance=ExtResource("2_box_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 1.35, 0)
+
+[node name="Box_L2_2" parent="BoxStack" unique_id=395190613 instance=ExtResource("2_box_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1.35, 0)
+
+[node name="Box_L3_1" parent="BoxStack" unique_id=250658992 instance=ExtResource("2_box_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 0)
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=1381576672]
+
+[node name="Instructions" type="Label" parent="UI" unique_id=649902702]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -220.0
+offset_top = 24.0
+offset_right = 220.0
+offset_bottom = 60.0
+grow_horizontal = 2
+text = "Aim with Mouse  |  Left Click to Shoot and Knock Boxes Off!"
+horizontal_alignment = 1
+vertical_alignment = 1

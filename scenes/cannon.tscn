@@ -1,0 +1,46 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/cannon.gd" id="1_cannon_script"]
+[ext_resource type="PackedScene" path="res://scenes/cannon_ball.tscn" id="2_ball_scene"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_barrel"]
+albedo_color = Color(0.22, 0.24, 0.28, 1)
+metallic = 0.9
+roughness = 0.3
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_barrel"]
+material = SubResource("StandardMaterial3D_barrel")
+top_radius = 0.3
+bottom_radius = 0.36
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mount"]
+albedo_color = Color(0.12, 0.13, 0.15, 1)
+metallic = 0.8
+roughness = 0.4
+
+[sub_resource type="SphereMesh" id="SphereMesh_mount"]
+material = SubResource("StandardMaterial3D_mount")
+radius = 0.45
+height = 0.9
+
+[node name="Cannon" type="Node3D" node_paths=PackedStringArray("muzzle", "barrel_mesh")]
+script = ExtResource("1_cannon_script")
+ball_scene = ExtResource("2_ball_scene")
+launch_speed = 52.0
+fire_cooldown = 0.25
+infinite_ammo = true
+enable_mouse_aim = true
+aim_plane_distance = 12.0
+muzzle = NodePath("Muzzle")
+barrel_mesh = NodePath("Barrel")
+
+[node name="Mount" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_mount")
+
+[node name="Barrel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -0.9)
+mesh = SubResource("CylinderMesh_barrel")
+
+[node name="Muzzle" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.85)
