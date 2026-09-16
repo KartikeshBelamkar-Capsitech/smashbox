@@ -41,10 +41,10 @@ transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0
 shadow_enabled = true
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1373167801]
-transform = Transform3D(1, 0, 0, 0, 0.970296, 0.241922, 0, -0.241922, 0.970296, 0, 3.4, 3.2)
+transform = Transform3D(1, 0, 0, 0, 0.970296, 0.241922, 0, -0.241922, 0.970296, 0, 2.9568343, 0.7371763)
 keep_aspect = 0
-fov = 68.0
 current = true
+fov = 68.0
 
 [node name="Cannon" parent="." unique_id=759202943 instance=ExtResource("1_cannon_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
