@@ -2,7 +2,6 @@
 
 [ext_resource type="PackedScene" uid="uid://cxc81kt3wohlk" path="res://scenes/cannon.tscn" id="1_cannon_scene"]
 [ext_resource type="PackedScene" uid="uid://b6c4al234gvpl" path="res://scenes/box.tscn" id="2_box_scene"]
-[ext_resource type="PackedScene" uid="uid://dav7mvbkhsx81" path="res://scenes/box-medium.tscn" id="3_sugp2"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.38, 0.65, 0.98, 1)
@@ -97,9 +96,6 @@ grow_horizontal = 2
 text = "Aim with Mouse  |  Left Click to Shoot and Knock Boxes Off!"
 horizontal_alignment = 1
 vertical_alignment = 1
-
-[node name="Box" parent="." unique_id=1046794428 instance=ExtResource("3_sugp2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.19, 5.4689627, -12.114661)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1249699051]
 transform = Transform3D(20.781864, 0, 0, 0, 1, 0, 0, 0, -21.071466, 0, 0, -6.725843)
