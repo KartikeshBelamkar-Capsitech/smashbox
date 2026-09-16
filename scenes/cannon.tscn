@@ -10,8 +10,8 @@ roughness = 0.4
 
 [sub_resource type="SphereMesh" id="SphereMesh_mount"]
 material = SubResource("StandardMaterial3D_mount")
-radius = 0.45
-height = 0.9
+radius = 0.28
+height = 0.56
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_barrel"]
 albedo_color = Color(0.22, 0.24, 0.28, 1)
@@ -20,9 +20,9 @@ roughness = 0.3
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_barrel"]
 material = SubResource("StandardMaterial3D_barrel")
-top_radius = 0.28
-bottom_radius = 0.28
-height = 1.8
+top_radius = 0.33
+bottom_radius = 0.36
+height = 1.0
 
 [node name="Cannon" type="Node3D" unique_id=1040816305 node_paths=PackedStringArray("muzzle", "barrel_mesh")]
 script = ExtResource("1_cannon_script")
@@ -32,11 +32,12 @@ muzzle = NodePath("Muzzle")
 barrel_mesh = NodePath("Barrel")
 
 [node name="Mount" type="MeshInstance3D" parent="." unique_id=337962403]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0.05)
 mesh = SubResource("SphereMesh_mount")
 
 [node name="Barrel" type="MeshInstance3D" parent="." unique_id=2098079901]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -0.9)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -0.5)
 mesh = SubResource("CylinderMesh_barrel")
 
 [node name="Muzzle" type="Marker3D" parent="." unique_id=616870185]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.05)

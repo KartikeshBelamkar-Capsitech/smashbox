@@ -81,14 +81,32 @@ func _process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	# Track mouse motion for 3D aiming
-	if enable_mouse_aim and event is InputEventMouse:
-		_update_aim_target_from_mouse(event.position)
+	if not enable_mouse_aim:
+		return
 		
-	# Fire input (Mouse Left Button or custom "shoot" action if configured)
+	# Native support for mouse motion, touch taps, and touch drags on mobile
+	var pointer_pos: Vector2 = Vector2.ZERO
+	var has_pointer_pos: bool = false
+	
+	if event is InputEventMouse:
+		pointer_pos = event.position
+		has_pointer_pos = true
+	elif event is InputEventScreenTouch or event is InputEventScreenDrag:
+		pointer_pos = event.position
+		has_pointer_pos = true
+		
+	if has_pointer_pos:
+		_update_aim_target_from_mouse(pointer_pos)
+		
+	# Fire trigger: Left click, mobile screen tap, or custom "shoot" action
 	var is_shoot_action: bool = InputMap.has_action("shoot") and event.is_action_pressed("shoot")
 	var is_mouse_click: bool = event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed
-	if is_shoot_action or is_mouse_click:
+	var is_touch_press: bool = event is InputEventScreenTouch and event.pressed
+	
+	if is_shoot_action or is_mouse_click or is_touch_press:
+		if has_pointer_pos:
+			_update_aim_target_from_mouse(pointer_pos)
+			_snap_aim_to_target()
 		shoot()
 
 
@@ -118,7 +136,7 @@ func shoot() -> bool:
 		if ball is CannonBall:
 			ball.launch(shoot_dir, launch_speed)
 		else:
-			ball.apply_central_impulse(shoot_dir * launch_speed)
+			ball.linear_velocity = shoot_dir * launch_speed
 			
 		ball_fired.emit(ball, shoot_dir * launch_speed)
 		
@@ -144,8 +162,11 @@ func reload() -> void:
 	)
 
 
-## Calculates the normalized forward vector based on muzzle or cannon orientation.
+## Calculates the normalized forward vector pointing directly toward the target aim point.
 func _get_shooting_direction() -> Vector3:
+	var origin: Vector3 = muzzle.global_position if muzzle else global_position
+	if _target_aim_point != Vector3.ZERO:
+		return (_target_aim_point - origin).normalized()
 	if muzzle:
 		return -muzzle.global_transform.basis.z.normalized()
 	return -global_transform.basis.z.normalized()
@@ -232,6 +253,30 @@ func _update_aim_target_from_mouse(mouse_pos: Vector2) -> void:
 			return
 			
 	_target_aim_point = ray_origin + ray_dir * aim_plane_distance
+
+
+## Instantly aligns the cannon orientation to current target (for responsive mobile tap shooting).
+func _snap_aim_to_target() -> void:
+	var look_target: Vector3 = _target_aim_point
+	var local_target: Vector3 = to_local(look_target)
+	
+	if local_target.length_squared() < 0.001:
+		return
+		
+	var target_yaw: float = -atan2(local_target.x, -local_target.z)
+	var horizontal_dist: float = Vector2(local_target.x, local_target.z).length()
+	var target_pitch: float = atan2(local_target.y, horizontal_dist)
+	
+	var min_yaw_rad: float = deg_to_rad(yaw_limits_deg.x)
+	var max_yaw_rad: float = deg_to_rad(yaw_limits_deg.y)
+	target_yaw = clampf(target_yaw, min_yaw_rad, max_yaw_rad)
+	
+	var min_pitch_rad: float = deg_to_rad(pitch_limits_deg.x)
+	var max_pitch_rad: float = deg_to_rad(pitch_limits_deg.y)
+	target_pitch = clampf(target_pitch, min_pitch_rad, max_pitch_rad)
+	
+	rotation.y = _initial_rotation_y + target_yaw
+	rotation.x = target_pitch
 
 
 ## Smoothly rotates the cannon towards the target point with angle limits.
