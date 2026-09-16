@@ -1,8 +1,8 @@
-[gd_scene format=3 uid="uid://lv1_boxsmash_001"]
+[gd_scene format=3 uid="uid://nckxresscp3n"]
 
 [ext_resource type="PackedScene" uid="uid://cxc81kt3wohlk" path="res://scenes/cannon.tscn" id="1_cannon"]
 [ext_resource type="PackedScene" uid="uid://b6c4al234gvpl" path="res://scenes/box.tscn" id="2_box"]
-[ext_resource type="Script" path="res://scripts/level_ui.gd" id="3_level_ui"]
+[ext_resource type="Script" uid="uid://cb435mwq2jsku" path="res://scripts/level_ui.gd" id="3_level_ui"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.38, 0.65, 0.98, 1)
@@ -33,78 +33,78 @@ size = Vector3(4.2, 12, 3.5)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_floor"]
 
-[node name="Level1" type="Node3D"]
+[node name="Level1" type="Node3D" unique_id=148456789]
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1063071856]
 environment = SubResource("Environment_main")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=73189912]
 transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 15, 0)
 shadow_enabled = true
 
-[node name="Camera3D" type="Camera3D" parent="."]
+[node name="Camera3D" type="Camera3D" parent="." unique_id=188166318]
 transform = Transform3D(1, 0, 0, 0, 0.9702958, 0.24192195, 0, -0.24192195, 0.9702958, 0, 7.930943, 0.7371763)
 keep_aspect = 0
 current = true
 fov = 68.0
 
-[node name="Cannon" parent="." instance=ExtResource("1_cannon")]
+[node name="Cannon" parent="." unique_id=739687157 instance=ExtResource("1_cannon")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.774109, 0)
 
-[node name="BoxPlatform" type="StaticBody3D" parent="."]
+[node name="BoxPlatform" type="StaticBody3D" parent="." unique_id=341634868]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.3303242, -12)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="BoxPlatform"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BoxPlatform" unique_id=565824217]
 transform = Transform3D(2.9083965, 1.509958e-07, 0, -4.3915566e-07, 1, 0, 0, 0, -3.3621898, 0, 0, 0)
 shape = SubResource("BoxShape3D_platform")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="BoxPlatform"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="BoxPlatform" unique_id=1126749520]
 transform = Transform3D(2.7416167, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0, 9.536743e-07, 0)
 mesh = SubResource("BoxMesh_platform")
 
-[node name="FloorPlane" type="MeshInstance3D" parent="."]
+[node name="FloorPlane" type="MeshInstance3D" parent="." unique_id=1159135939]
 transform = Transform3D(20.781864, 0, 0, 0, 1, 0, 0, 0, -21.071466, 0, 0, -6.725843)
 mesh = SubResource("PlaneMesh_floor")
 
-[node name="BoxStack" type="Node3D" parent="."]
+[node name="BoxStack" type="Node3D" parent="." unique_id=1202065738]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.669676, -11.98)
 
-[node name="Box_L1_1" parent="BoxStack" instance=ExtResource("2_box")]
+[node name="Box_L1_1" parent="BoxStack" unique_id=1600862777 instance=ExtResource("2_box")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 0.45, 0)
 
-[node name="Box_L1_2" parent="BoxStack" instance=ExtResource("2_box")]
+[node name="Box_L1_2" parent="BoxStack" unique_id=534382263 instance=ExtResource("2_box")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.47, 0.45, 0)
 
-[node name="Box_L1_3" parent="BoxStack" instance=ExtResource("2_box")]
+[node name="Box_L1_3" parent="BoxStack" unique_id=366047296 instance=ExtResource("2_box")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.47, 0.45, 0)
 
-[node name="Box_L1_4" parent="BoxStack" instance=ExtResource("2_box")]
+[node name="Box_L1_4" parent="BoxStack" unique_id=39555527 instance=ExtResource("2_box")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4, 0.45, 0)
 
-[node name="Box_L2_1" parent="BoxStack" instance=ExtResource("2_box")]
+[node name="Box_L2_1" parent="BoxStack" unique_id=795940991 instance=ExtResource("2_box")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.95, 1.35, 0)
 
-[node name="Box_L2_2" parent="BoxStack" instance=ExtResource("2_box")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 1.35, 0)
+[node name="Box_L2_2" parent="BoxStack" unique_id=625348376 instance=ExtResource("2_box")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, 0)
 
-[node name="Box_L2_3" parent="BoxStack" instance=ExtResource("2_box")]
+[node name="Box_L2_3" parent="BoxStack" unique_id=1108526275 instance=ExtResource("2_box")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95, 1.35, 0)
 
-[node name="Box_L3_1" parent="BoxStack" instance=ExtResource("2_box")]
+[node name="Box_L3_1" parent="BoxStack" unique_id=397282486 instance=ExtResource("2_box")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.48, 2.25, 0)
 
-[node name="Box_L3_2" parent="BoxStack" instance=ExtResource("2_box")]
+[node name="Box_L3_2" parent="BoxStack" unique_id=104797533 instance=ExtResource("2_box")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.48, 2.25, 0)
 
-[node name="Box_L4_1" parent="BoxStack" instance=ExtResource("2_box")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 3.15, 0)
+[node name="Box_L4_1" parent="BoxStack" unique_id=1755146535 instance=ExtResource("2_box")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.15, 0)
 
-[node name="LevelUI" type="CanvasLayer" parent="."]
+[node name="LevelUI" type="CanvasLayer" parent="." unique_id=822107232]
 script = ExtResource("3_level_ui")
 level_title = "Level 1 (Regular Crates)"
 next_scene_path = "res://scenes/levels/level_2.tscn"
 
-[node name="Control" type="Control" parent="LevelUI"]
+[node name="Control" type="Control" parent="LevelUI" unique_id=1801308701]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -113,7 +113,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="TitleLabel" type="Label" parent="LevelUI/Control"]
+[node name="TitleLabel" type="Label" parent="LevelUI/Control" unique_id=815120451]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -128,7 +128,7 @@ text = "Level 1 (Regular Crates)"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="NextButton" type="Button" parent="LevelUI/Control"]
+[node name="NextButton" type="Button" parent="LevelUI/Control" unique_id=785598710]
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
@@ -141,7 +141,7 @@ grow_horizontal = 0
 theme_override_font_sizes/font_size = 18
 text = "Next >"
 
-[node name="PrevButton" type="Button" parent="LevelUI/Control"]
+[node name="PrevButton" type="Button" parent="LevelUI/Control" unique_id=1993265777]
 visible = false
 layout_mode = 1
 offset_left = 24.0
@@ -151,7 +151,7 @@ offset_bottom = 72.0
 theme_override_font_sizes/font_size = 18
 text = "< Prev"
 
-[node name="RestartButton" type="Button" parent="LevelUI/Control"]
+[node name="RestartButton" type="Button" parent="LevelUI/Control" unique_id=1313129667]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5

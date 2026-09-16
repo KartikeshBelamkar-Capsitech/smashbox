@@ -19,8 +19,15 @@ signal despawned()
 ## Custom gravity scale for satisfying arcade trajectory (lower = flatter, punchier shot).
 @export_range(0.1, 1.5, 0.05) var gravity_scale_factor: float = 0.45
 
+@export_group("Impact VFX")
+## Visual effect spawned on impact with physics targets.
+@export var impact_effect_scene: PackedScene = preload("res://scenes/effects/impact_effect.tscn")
+## Minimum velocity required to trigger an impact explosion.
+@export var min_impact_speed: float = 6.0
+
 var _life_timer: float = 0.0
 var _is_despawning: bool = false
+var _last_impact_time: float = -1.0
 
 
 func _ready() -> void:
@@ -70,8 +77,31 @@ func _on_body_entered(body: Node) -> void:
 	if _is_despawning:
 		return
 		
+	var current_speed: float = linear_velocity.length()
+	var current_time: float = Time.get_ticks_msec() / 1000.0
 	var contact_point: Vector3 = global_position
 	var contact_normal: Vector3 = -linear_velocity.normalized()
 	
+	# Trigger impact VFX on solid hits (throttled to prevent redundant stacking)
+	if current_speed >= min_impact_speed and (current_time - _last_impact_time > 0.08):
+		_last_impact_time = current_time
+		_spawn_impact_vfx(contact_point, contact_normal)
+		
 	if body is Node3D:
 		impacted.emit(body, contact_point, contact_normal)
+
+
+## Spawns the impact visual effect oriented along the collision normal.
+func _spawn_impact_vfx(pos: Vector3, normal: Vector3) -> void:
+	if not impact_effect_scene:
+		return
+		
+	var effect := impact_effect_scene.instantiate() as Node3D
+	if not effect:
+		return
+		
+	get_tree().root.add_child(effect)
+	effect.global_position = pos
+	
+	if normal != Vector3.ZERO and not normal.is_equal_approx(Vector3.UP):
+		effect.look_at(pos + normal, Vector3.UP)

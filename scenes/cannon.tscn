@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cv8sugbdy3jsc" path="res://scripts/cannon.gd" id="1_cannon_script"]
 [ext_resource type="PackedScene" path="res://scenes/cannon_ball.tscn" id="2_ball_scene"]
+[ext_resource type="PackedScene" uid="uid://mzl_eff_001" path="res://scenes/effects/muzzle_effect.tscn" id="3_muzzle_effect"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mount"]
 albedo_color = Color(0.12, 0.13, 0.15, 1)
@@ -24,12 +25,13 @@ top_radius = 0.33
 bottom_radius = 0.36
 height = 1.0
 
-[node name="Cannon" type="Node3D" unique_id=1040816305 node_paths=PackedStringArray("muzzle", "barrel_mesh")]
+[node name="Cannon" type="Node3D" unique_id=1040816305 node_paths=PackedStringArray("muzzle", "barrel_mesh", "muzzle_effect")]
 script = ExtResource("1_cannon_script")
 ball_scene = ExtResource("2_ball_scene")
 launch_speed = 52.0
 muzzle = NodePath("Muzzle")
 barrel_mesh = NodePath("Barrel")
+muzzle_effect = NodePath("Muzzle/MuzzleEffect")
 
 [node name="Mount" type="MeshInstance3D" parent="." unique_id=337962403]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0.05)
@@ -41,3 +43,5 @@ mesh = SubResource("CylinderMesh_barrel")
 
 [node name="Muzzle" type="Marker3D" parent="." unique_id=616870185]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.05)
+
+[node name="MuzzleEffect" parent="Muzzle" instance=ExtResource("3_muzzle_effect")]

@@ -44,6 +44,8 @@ signal reloaded()
 @export var muzzle: Marker3D
 ## Optional barrel node that receives procedural recoil animation on fire.
 @export var barrel_mesh: Node3D
+## Optional muzzle effect node (sparks, smoke, flash light).
+@export var muzzle_effect: MuzzleEffect
 ## Reference to the camera used for mouse projection. If null, attempts to find active 3D camera.
 @export var aim_camera: Camera3D
 
@@ -70,6 +72,9 @@ func _ready() -> void:
 	# Fallback: find child Marker3D if muzzle wasn't explicitly assigned
 	if not muzzle:
 		muzzle = find_child("Muzzle", true, false) as Marker3D
+		
+	if not muzzle_effect:
+		muzzle_effect = find_child("MuzzleEffect", true, false) as MuzzleEffect
 
 
 func _process(delta: float) -> void:
@@ -140,8 +145,10 @@ func shoot() -> bool:
 			
 		ball_fired.emit(ball, shoot_dir * launch_speed)
 		
-	# Play recoil juice
+	# Play recoil juice and muzzle blast
 	_trigger_recoil()
+	if muzzle_effect:
+		muzzle_effect.play()
 	
 	return true
 

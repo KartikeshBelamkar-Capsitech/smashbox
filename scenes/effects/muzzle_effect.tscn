@@ -1,0 +1,149 @@
+[gd_scene load_steps=14 format=3 uid="uid://mzl_eff_001"]
+
+[ext_resource type="Script" path="res://scripts/muzzle_effect.gd" id="1_mzl_script"]
+
+[sub_resource type="Gradient" id="Gradient_radial"]
+offsets = PackedFloat32Array(0, 0.35, 0.7, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.85, 1, 1, 1, 0.25, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_soft_radial"]
+gradient = SubResource("Gradient_radial")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fire"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = SubResource("GradientTexture2D_soft_radial")
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_fire_core"]
+material = SubResource("StandardMaterial3D_fire")
+size = Vector2(0.65, 0.65)
+
+[sub_resource type="Gradient" id="Gradient_fire_color"]
+offsets = PackedFloat32Array(0, 0.25, 0.7, 1)
+colors = PackedColorArray(2, 1.8, 1.2, 1, 1.8, 1, 0.2, 0.9, 1.4, 0.4, 0.05, 0.6, 0.8, 0.1, 0, 0)
+
+[sub_resource type="Curve" id="Curve_fire_scale"]
+_data = [Vector2(0, 0.3), 0.0, 0.0, 0, 0, Vector2(0.2, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.1), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="QuadMesh" id="QuadMesh_fire_jet"]
+material = SubResource("StandardMaterial3D_fire")
+size = Vector2(0.45, 0.45)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spark"]
+shading_mode = 0
+albedo_color = Color(2, 1.4, 0.3, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_spark"]
+material = SubResource("StandardMaterial3D_spark")
+radius = 0.022
+height = 0.044
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_smoke"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = SubResource("GradientTexture2D_soft_radial")
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_smoke"]
+material = SubResource("StandardMaterial3D_smoke")
+size = Vector2(0.6, 0.6)
+
+[sub_resource type="Gradient" id="Gradient_smoke_color"]
+offsets = PackedFloat32Array(0, 0.3, 0.75, 1)
+colors = PackedColorArray(0.85, 0.85, 0.88, 0.5, 0.7, 0.7, 0.75, 0.38, 0.55, 0.55, 0.6, 0.18, 0.45, 0.45, 0.5, 0)
+
+[sub_resource type="Curve" id="Curve_smoke_scale"]
+_data = [Vector2(0, 0.3), 0.0, 0.0, 0, 0, Vector2(0.4, 0.85), 0.0, 0.0, 0, 0, Vector2(1, 1.4), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[node name="MuzzleEffect" type="Node3D"]
+script = ExtResource("1_mzl_script")
+max_light_energy = 3.2
+light_fade_duration = 0.12
+
+[node name="FlashLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.15)
+light_color = Color(1, 0.8, 0.45, 1)
+light_energy = 0.0
+omni_range = 5.5
+omni_attenuation = 1.6
+
+[node name="FireCore" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.1)
+emitting = false
+amount = 5
+lifetime = 0.14
+one_shot = true
+explosiveness = 0.98
+mesh = SubResource("QuadMesh_fire_core")
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 1.0
+initial_velocity_max = 3.0
+scale_amount_curve = SubResource("Curve_fire_scale")
+color_ramp = SubResource("Gradient_fire_color")
+
+[node name="FireJet" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.15)
+emitting = false
+amount = 8
+lifetime = 0.16
+one_shot = true
+explosiveness = 0.95
+mesh = SubResource("QuadMesh_fire_jet")
+direction = Vector3(0, 0, -1)
+spread = 18.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 7.0
+initial_velocity_max = 12.0
+damping_min = 12.0
+damping_max = 18.0
+scale_amount_curve = SubResource("Curve_fire_scale")
+color_ramp = SubResource("Gradient_fire_color")
+
+[node name="SparkParticles" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.1)
+emitting = false
+amount = 14
+lifetime = 0.22
+one_shot = true
+explosiveness = 0.96
+mesh = SubResource("SphereMesh_spark")
+direction = Vector3(0, 0, -1)
+spread = 24.0
+gravity = Vector3(0, -6, 0)
+initial_velocity_min = 16.0
+initial_velocity_max = 25.0
+damping_min = 10.0
+damping_max = 16.0
+
+[node name="SmokeParticles" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.2)
+emitting = false
+amount = 8
+lifetime = 0.32
+one_shot = true
+explosiveness = 0.9
+mesh = SubResource("QuadMesh_smoke")
+direction = Vector3(0, 0, -1)
+spread = 30.0
+gravity = Vector3(0, 1.4, 0)
+initial_velocity_min = 3.0
+initial_velocity_max = 5.5
+damping_min = 6.0
+damping_max = 10.0
+scale_amount_curve = SubResource("Curve_smoke_scale")
+color_ramp = SubResource("Gradient_smoke_color")
