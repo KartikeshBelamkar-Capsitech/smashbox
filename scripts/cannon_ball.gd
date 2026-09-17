@@ -31,6 +31,7 @@ var _last_impact_time: float = -1.0
 
 
 func _ready() -> void:
+	add_to_group("cannon_balls")
 	# Configure physics for high-speed projectile reliability
 	continuous_cd = true
 	contact_monitor = true
@@ -82,10 +83,11 @@ func _on_body_entered(body: Node) -> void:
 	var contact_point: Vector3 = global_position
 	var contact_normal: Vector3 = -linear_velocity.normalized()
 	
-	# Trigger impact VFX on solid hits (throttled to prevent redundant stacking)
+	# Trigger impact VFX and mobile haptics on solid hits (throttled to prevent redundant stacking)
 	if current_speed >= min_impact_speed and (current_time - _last_impact_time > 0.08):
 		_last_impact_time = current_time
 		_spawn_impact_vfx(contact_point, contact_normal)
+		HapticManager.play_impact()
 		
 	if body is Node3D:
 		impacted.emit(body, contact_point, contact_normal)

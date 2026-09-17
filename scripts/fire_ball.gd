@@ -44,6 +44,7 @@ func detonate(should_explode_table: bool = true) -> void:
 			exp_effect.global_position = blast_pos
 			
 	exploded.emit(blast_pos)
+	HapticManager.play_explosion()
 	
 	# Only fling table objects if target or table platform was struck
 	if should_explode_table:

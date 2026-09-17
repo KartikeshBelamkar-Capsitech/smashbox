@@ -185,6 +185,7 @@ func _show_win_panel() -> void:
 	level_finished = true
 	if cannon:
 		cannon.set_process_unhandled_input(false)
+	HapticManager.play_win(get_tree())
 	var button_text: String = "QUIT" if next_scene_path.is_empty() else "NEXT LEVEL"
 	_show_result_panel("YOU WIN!", button_text, _on_win_action_pressed)
 
@@ -193,6 +194,7 @@ func _show_lose_panel() -> void:
 	level_finished = true
 	if cannon:
 		cannon.set_process_unhandled_input(false)
+	HapticManager.play_lose()
 	_show_result_panel("YOU LOSE!", "PLAY AGAIN", _on_play_again_pressed)
 
 
@@ -250,10 +252,12 @@ func _show_result_panel(result_text: String, button_text: String, action: Callab
 
 
 func _on_play_again_pressed() -> void:
+	HapticManager.play_button_click()
 	get_tree().reload_current_scene()
 
 
 func _on_win_action_pressed() -> void:
+	HapticManager.play_button_click()
 	if next_scene_path.is_empty():
 		get_tree().change_scene_to_file(HOME_SCENE_PATH)
 	else:
@@ -261,4 +265,5 @@ func _on_win_action_pressed() -> void:
 
 
 func _on_restart_pressed() -> void:
+	HapticManager.play_button_click()
 	get_tree().reload_current_scene()
