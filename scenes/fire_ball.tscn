@@ -1,17 +1,17 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene format=3 uid="uid://fspf7dhasqjg"]
 
-[ext_resource type="Script" path="res://scripts/fire_ball.gd" id="1_fire_script"]
+[ext_resource type="Script" uid="uid://of14ie2lhdyo" path="res://scripts/fire_ball.gd" id="1_fire_script"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_ball"]
 radius = 0.45
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fire"]
 albedo_color = Color(1, 0.35, 0.05, 1)
+metallic = 0.3
+roughness = 0.3
 emission_enabled = true
 emission = Color(1, 0.45, 0.1, 1)
 emission_energy_multiplier = 4.0
-metallic = 0.3
-roughness = 0.3
 
 [sub_resource type="SphereMesh" id="SphereMesh_ball"]
 material = SubResource("StandardMaterial3D_fire")
@@ -20,7 +20,7 @@ height = 0.9
 
 [sub_resource type="Gradient" id="Gradient_soft"]
 offsets = PackedFloat32Array(0, 0.4, 0.8, 1)
-colors = PackedColorArray(1, 1, 1, 1, 1, 0.8, 0.2, 0.8, 1, 0.3, 0.05, 0.3, 1, 0.1, 0.0, 0)
+colors = PackedColorArray(1, 1, 1, 1, 1, 0.8, 0.2, 0.8, 1, 0.3, 0.05, 0.3, 1, 0.1, 0, 0)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_trail"]
 gradient = SubResource("Gradient_soft")
@@ -47,7 +47,7 @@ size = Vector2(0.6, 0.6)
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.2), 0.0, 0.0, 0, 0]
 point_count = 2
 
-[node name="FireBall" type="RigidBody3D"]
+[node name="FireBall" type="RigidBody3D" unique_id=1604108013]
 mass = 5.0
 gravity_scale = 0.35
 continuous_cd = true
@@ -55,18 +55,18 @@ contact_monitor = true
 max_contacts_reported = 4
 script = ExtResource("1_fire_script")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1062766740]
 shape = SubResource("SphereShape3D_ball")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=485902672]
 mesh = SubResource("SphereMesh_ball")
 
-[node name="FireLight" type="OmniLight3D" parent="."]
+[node name="FireLight" type="OmniLight3D" parent="." unique_id=135176370]
 light_color = Color(1, 0.55, 0.1, 1)
 light_energy = 3.5
 omni_range = 8.0
 
-[node name="TrailParticles" type="CPUParticles3D" parent="."]
+[node name="TrailParticles" type="CPUParticles3D" parent="." unique_id=1444952583]
 amount = 20
 lifetime = 0.35
 mesh = SubResource("QuadMesh_trail")

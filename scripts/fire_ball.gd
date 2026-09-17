@@ -6,7 +6,7 @@ signal exploded(explosion_center: Vector3)
 
 @export var explosion_scene: PackedScene = preload("res://scenes/effects/explosion_effect.tscn")
 @export var blast_radius: float = 20.0
-@export var blast_force: float = 75.0
+@export var blast_force: float = 2.0
 
 var _has_exploded: bool = false
 
@@ -101,7 +101,7 @@ func _explode_table_objects(blast_pos: Vector3) -> void:
 			horizontal_dir = horizontal_dir.normalized()
 			
 		# Add a strong random upward angle to ensure objects clear the table
-		var upward_factor: float = randf_range(0.9, 1.6)
+		var upward_factor: float = randf_range(0.5, 0.9)
 		var impulse_dir: Vector3 = (horizontal_dir + Vector3.UP * upward_factor).normalized()
 		
 		# Ensure body is awake
