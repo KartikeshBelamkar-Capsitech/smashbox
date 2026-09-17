@@ -122,7 +122,7 @@ func _check_lose_condition() -> void:
 		_check_level_state()
 		if not level_finished:
 			_is_waiting_lose = true
-			await get_tree().create_timer(2.0).timeout
+			await get_tree().create_timer(0.015).timeout
 			if not level_finished:
 				_show_lose_panel()
 			_is_waiting_lose = false
