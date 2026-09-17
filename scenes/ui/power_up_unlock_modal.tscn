@@ -1,18 +1,17 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://bhxt51y2ny0eu"]
 
-[ext_resource type="Script" path="res://scripts/power_up_unlock_modal.gd" id="1_modal_script"]
+[ext_resource type="Script" uid="uid://j2r57mqnmxeh" path="res://scripts/power_up_unlock_modal.gd" id="1_modal_script"]
 
-[node name="PowerUpUnlockModal" type="Control"]
+[node name="PowerUpUnlockModal" type="Control" unique_id=169191520]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 script = ExtResource("1_modal_script")
 
-[node name="Backdrop" type="ColorRect" parent="."]
+[node name="Backdrop" type="ColorRect" parent="." unique_id=1905543663]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -21,7 +20,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.02, 0.03, 0.07, 0.78)
 
-[node name="Card" type="PanelContainer" parent="."]
+[node name="Card" type="PanelContainer" parent="." unique_id=2076262739]
 custom_minimum_size = Vector2(460, 360)
 layout_mode = 1
 anchors_preset = 8
@@ -37,55 +36,57 @@ grow_horizontal = 2
 grow_vertical = 2
 pivot_offset = Vector2(230, 180)
 
-[node name="MarginContainer" type="MarginContainer" parent="Card"]
+[node name="MarginContainer" type="MarginContainer" parent="Card" unique_id=283318358]
 layout_mode = 2
 theme_override_constants/margin_left = 24
 theme_override_constants/margin_top = 24
 theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 24
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Card/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Card/MarginContainer" unique_id=1907495284]
 layout_mode = 2
 theme_override_constants/separation = 14
 alignment = 1
 
-[node name="BadgeLabel" type="Label" parent="Card/MarginContainer/VBoxContainer"]
+[node name="BadgeLabel" type="Label" parent="Card/MarginContainer/VBoxContainer" unique_id=538960359]
+visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 theme_override_font_sizes/font_size = 14
 text = "★ NEW POWER-UP UNLOCKED! ★"
 horizontal_alignment = 1
 
-[node name="IconLabel" type="Label" parent="Card/MarginContainer/VBoxContainer"]
+[node name="IconLabel" type="Label" parent="Card/MarginContainer/VBoxContainer" unique_id=1849889520]
 layout_mode = 2
 theme_override_font_sizes/font_size = 52
 text = "⚡"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="TitleLabel" type="Label" parent="Card/MarginContainer/VBoxContainer"]
+[node name="TitleLabel" type="Label" parent="Card/MarginContainer/VBoxContainer" unique_id=1904746591]
 layout_mode = 2
 theme_override_font_sizes/font_size = 23
 text = "Yay!! Triple Shot Unlocked!"
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="PunchlineLabel" type="Label" parent="Card/MarginContainer/VBoxContainer"]
+[node name="PunchlineLabel" type="Label" parent="Card/MarginContainer/VBoxContainer" unique_id=410297805]
+visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.9, 0.95, 0.9)
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 18
 text = "Rapid Burst Ready!
 Shoot 3 balls one by one for the cost of only 1!"
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="Spacer" type="Control" parent="Card/MarginContainer/VBoxContainer"]
+[node name="Spacer" type="Control" parent="Card/MarginContainer/VBoxContainer" unique_id=511412325]
 custom_minimum_size = Vector2(0, 6)
 layout_mode = 2
 
-[node name="ActionButton" type="Button" parent="Card/MarginContainer/VBoxContainer"]
+[node name="ActionButton" type="Button" parent="Card/MarginContainer/VBoxContainer" unique_id=176432565]
 custom_minimum_size = Vector2(220, 52)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 17
-text = "LET'S SMASH! ⚡"
+text = "LET'S SMASH! "

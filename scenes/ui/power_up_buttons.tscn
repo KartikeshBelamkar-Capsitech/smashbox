@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://bnirrho48ebyr"]
 
-[ext_resource type="Script" path="res://scripts/power_up_buttons.gd" id="1_pw_script"]
+[ext_resource type="Script" uid="uid://c8cfkwvkyc435" path="res://scripts/power_up_buttons.gd" id="1_pw_script"]
 
-[node name="PowerUpButtons" type="Control"]
+[node name="PowerUpButtons" type="Control" unique_id=2090609333]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,7 +12,7 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_pw_script")
 
-[node name="LeftButton" type="Button" parent="."]
+[node name="LeftButton" type="Button" parent="." unique_id=800192048]
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
@@ -27,23 +27,23 @@ theme_override_font_sizes/font_size = 17
 text = "🔥
 EXPLODE"
 
-[node name="BadgeLabel" type="Label" parent="LeftButton"]
+[node name="BadgeLabel" type="Label" parent="LeftButton" unique_id=1727081601]
 visible = false
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -45.0
-offset_top = -14.0
+offset_top = -25.0
 offset_right = 45.0
-offset_bottom = 8.0
+offset_bottom = -3.0
 grow_horizontal = 2
 theme_override_colors/font_color = Color(1, 0.95, 0.2, 1)
 theme_override_font_sizes/font_size = 12
 text = "ARMED!"
 horizontal_alignment = 1
 
-[node name="RightButton" type="Button" parent="."]
+[node name="RightButton" type="Button" parent="." unique_id=73703257]
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
@@ -61,16 +61,16 @@ theme_override_font_sizes/font_size = 17
 text = "⚡
 TRIPLE"
 
-[node name="BadgeLabel" type="Label" parent="RightButton"]
+[node name="BadgeLabel" type="Label" parent="RightButton" unique_id=644374323]
 visible = false
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -45.0
-offset_top = -14.0
+offset_top = -23.0
 offset_right = 45.0
-offset_bottom = 8.0
+offset_bottom = -1.0
 grow_horizontal = 2
 theme_override_colors/font_color = Color(0.4, 1, 1, 1)
 theme_override_font_sizes/font_size = 12

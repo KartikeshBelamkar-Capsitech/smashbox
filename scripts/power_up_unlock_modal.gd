@@ -41,12 +41,12 @@ func _setup_triple_shot() -> void:
 	if icon_label:
 		icon_label.text = "⚡"
 	if title_label:
-		title_label.text = "Yay!! Triple Shot Unlocked!"
+		title_label.text = "Yay!! Triple Shot Power-Up Unlocked!"
 		title_label.add_theme_color_override("font_color", Color(0.3, 0.9, 1.0, 1.0))
-	if punchline_label:
-		punchline_label.text = "Rapid Burst Ready!\nShoot 3 balls one by one for the cost of only 1!"
+	#if punchline_label:
+		#punchline_label.text = "Rapid Burst Ready!\nShoot 3 balls one by one for the cost of only 1!"
 	if action_button:
-		action_button.text = "LET'S SMASH! ⚡"
+		action_button.text = "LET'S SMASH!"
 		_apply_button_style(action_button, Color(0.05, 0.45, 0.85, 0.95), Color(0.4, 0.95, 1.0, 1.0))
 	_apply_card_style(Color(0.05, 0.15, 0.25, 0.96), Color(0.2, 0.75, 1.0, 0.9))
 
@@ -57,10 +57,10 @@ func _setup_explode() -> void:
 	if title_label:
 		title_label.text = "Yay!! Explode Power-Up Unlocked!"
 		title_label.add_theme_color_override("font_color", Color(1.0, 0.65, 0.15, 1.0))
-	if punchline_label:
-		punchline_label.text = "Total Devastation Unleashed!\nDetonate a fiery blast that flings every box away!"
+	#if punchline_label:
+		#punchline_label.text = "Total Devastation Unleashed!\nDetonate a fiery blast that flings every box away!"
 	if action_button:
-		action_button.text = "BLAST THEM! 💥"
+		action_button.text = "BLAST THEM!"
 		_apply_button_style(action_button, Color(0.85, 0.28, 0.05, 0.95), Color(1.0, 0.8, 0.2, 1.0))
 	_apply_card_style(Color(0.22, 0.08, 0.05, 0.96), Color(1.0, 0.45, 0.1, 0.9))
 
