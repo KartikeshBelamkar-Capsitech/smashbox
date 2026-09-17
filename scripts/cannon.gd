@@ -225,20 +225,22 @@ func _shoot_fire_explode() -> bool:
 	return true
 
 
-## Rapidly fires 3 balls one by one in succession.
+## Rapidly fires 3 balls one by one in succession, consuming only 1 ammo.
 func _shoot_triple_burst() -> void:
+	if not infinite_ammo:
+		if current_ammo <= 0:
+			out_of_ammo.emit()
+			if auto_reload:
+				reload()
+			return
+		current_ammo -= 1
+		ammo_changed.emit(current_ammo)
+		
 	_is_burst_firing = true
 	_cooldown_timer = fire_cooldown + 0.35
 	
 	var angles: Array[float] = [-1.5, 0.0, 1.5]
 	for i in range(3):
-		if not infinite_ammo:
-			if current_ammo <= 0:
-				out_of_ammo.emit()
-				break
-			current_ammo -= 1
-			ammo_changed.emit(current_ammo)
-			
 		var ball: RigidBody3D = _spawn_ball()
 		if ball:
 			var base_dir: Vector3 = _get_shooting_direction()
