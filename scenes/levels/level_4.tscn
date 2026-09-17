@@ -64,7 +64,7 @@ transform = Transform3D(2.7416167, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0, 9.536743e
 mesh = SubResource("BoxMesh_platform")
 
 [node name="BoxStack" type="Node3D" parent="." unique_id=255720534]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.669676, -11.98)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 4.67, -11.98)
 
 [node name="Box_L1_1" parent="BoxStack" unique_id=646394747 instance=ExtResource("2_box_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5541275, 0.4499998, 0)
