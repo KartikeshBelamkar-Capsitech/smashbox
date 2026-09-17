@@ -37,6 +37,44 @@ func _ready() -> void:
 		_connect_cannon()
 		
 	_update_ui_state(PowerUp.Type.NONE)
+	_auto_configure_for_level()
+
+
+## Configures power-up visibility according to level progression:
+## - Levels 1 to 3: None
+## - Levels 4 to 6: Triple Shot only
+## - Levels 7+: Explode and Triple Shot
+func configure_for_level(level_number: int) -> void:
+	var triple_unlocked: bool = level_number > 3
+	var explode_unlocked: bool = level_number > 6
+	
+	if right_btn:
+		right_btn.visible = triple_unlocked
+	if left_btn:
+		left_btn.visible = explode_unlocked
+
+
+func _auto_configure_for_level() -> void:
+	var path: String = ""
+	if get_tree() and get_tree().current_scene:
+		path = get_tree().current_scene.scene_file_path
+		
+	var regex := RegEx.create_from_string("level_(\\d+)")
+	var match_res := regex.search(path)
+	if match_res:
+		configure_for_level(match_res.get_string(1).to_int())
+		return
+		
+	# Check parent LevelUI title if available
+	var parent_ui := get_parent()
+	while parent_ui:
+		if "level_title" in parent_ui:
+			var title_regex := RegEx.create_from_string("Level\\s*(\\d+)")
+			var title_match := title_regex.search(parent_ui.level_title)
+			if title_match:
+				configure_for_level(title_match.get_string(1).to_int())
+				return
+		parent_ui = parent_ui.get_parent()
 
 
 func set_cannon(new_cannon: Cannon) -> void:

@@ -6,7 +6,7 @@ signal exploded(explosion_center: Vector3)
 
 @export var explosion_scene: PackedScene = preload("res://scenes/effects/explosion_effect.tscn")
 @export var blast_radius: float = 20.0
-@export var blast_force: float = 2.0
+@export var blast_force: float = 3.5
 
 var _has_exploded: bool = false
 
@@ -100,22 +100,22 @@ func _explode_table_objects(blast_pos: Vector3) -> void:
 		else:
 			horizontal_dir = horizontal_dir.normalized()
 			
-		# Add a strong random upward angle to ensure objects clear the table
-		var upward_factor: float = randf_range(0.5, 0.9)
+		# Add a moderate upward pop so objects lift gently off the table
+		var upward_factor: float = randf_range(0.35, 0.65)
 		var impulse_dir: Vector3 = (horizontal_dir + Vector3.UP * upward_factor).normalized()
 		
 		# Ensure body is awake
 		obj.sleeping = false
 		obj.freeze = false
 		
-		# Give a massive blast impulse scaled with mass
-		var actual_force: float = randf_range(blast_force * 0.8, blast_force * 1.3) * maxf(obj.mass, 1.0)
+		# Blast impulse scaled with mass
+		var actual_force: float = randf_range(blast_force * 0.8, blast_force * 1.2) * maxf(obj.mass, 1.0)
 		obj.apply_central_impulse(impulse_dir * actual_force)
 		
-		# Wild angular tumbling
+		# Gentle tumbling
 		var torque: Vector3 = Vector3(
-			randf_range(-30.0, 30.0),
-			randf_range(-30.0, 30.0),
-			randf_range(-30.0, 30.0)
+			randf_range(-12.0, 12.0),
+			randf_range(-12.0, 12.0),
+			randf_range(-12.0, 12.0)
 		) * maxf(obj.mass, 1.0)
 		obj.apply_torque_impulse(torque)

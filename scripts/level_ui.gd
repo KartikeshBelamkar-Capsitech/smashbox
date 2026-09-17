@@ -51,9 +51,13 @@ func _spawn_power_up_buttons() -> void:
 	power_up_buttons_instance = power_up_buttons_scene.instantiate() as Control
 	if power_up_buttons_instance:
 		ctrl.add_child(power_up_buttons_instance)
-		var cannon: Node = get_parent().find_child("Cannon", true, false)
-		if cannon and power_up_buttons_instance.has_method("set_cannon"):
-			power_up_buttons_instance.call("set_cannon", cannon)
+		var cannon_node: Node = get_parent().find_child("Cannon", true, false)
+		if cannon_node and power_up_buttons_instance.has_method("set_cannon"):
+			power_up_buttons_instance.call("set_cannon", cannon_node)
+			
+		var lvl_num: int = _get_current_level_number()
+		if power_up_buttons_instance.has_method("configure_for_level"):
+			power_up_buttons_instance.call("configure_for_level", lvl_num)
 
 	_create_ammo_label()
 	if cannon:
@@ -62,6 +66,26 @@ func _spawn_power_up_buttons() -> void:
 		_on_ammo_changed(cannon.current_ammo)
 
 	call_deferred("_check_level_state")
+
+
+func _get_current_level_number() -> int:
+	var path: String = ""
+	if get_tree() and get_tree().current_scene:
+		path = get_tree().current_scene.scene_file_path
+	if path.is_empty():
+		path = scene_file_path
+		
+	var regex := RegEx.create_from_string("level_(\\d+)")
+	var match_res := regex.search(path)
+	if match_res:
+		return match_res.get_string(1).to_int()
+		
+	var title_regex := RegEx.create_from_string("Level\\s*(\\d+)")
+	var title_match := title_regex.search(level_title)
+	if title_match:
+		return title_match.get_string(1).to_int()
+		
+	return 999
 
 
 func _process(_delta: float) -> void:
