@@ -10,6 +10,7 @@
 albedo_color = Color(0.26852447, 0.5402171, 0.8151441, 1)
 
 [node name="Cylinder" type="RigidBody3D" unique_id=1237817233]
+mass = 8.0
 script = ExtResource("1_ukdh2")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=166713784]

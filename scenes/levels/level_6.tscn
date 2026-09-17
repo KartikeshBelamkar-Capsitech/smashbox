@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bafsjjahxijfk"]
 
-[ext_resource type="PackedScene" path="res://scenes/cannon.tscn" id="1_4t8k6"]
-[ext_resource type="PackedScene" path="res://scenes/box.tscn" id="2_ku6r7"]
+[ext_resource type="PackedScene" uid="uid://cxc81kt3wohlk" path="res://scenes/cannon.tscn" id="1_4t8k6"]
+[ext_resource type="PackedScene" uid="uid://b6c4al234gvpl" path="res://scenes/box.tscn" id="2_ku6r7"]
 [ext_resource type="PackedScene" uid="uid://dav7mvbkhsx81" path="res://scenes/box-medium.tscn" id="3_hi6ks"]
 [ext_resource type="Script" uid="uid://cb435mwq2jsku" path="res://scripts/level_ui.gd" id="100_level_ui"]
 
@@ -144,6 +144,7 @@ mesh = SubResource("PlaneMesh_ground")
 [node name="LevelUI" type="CanvasLayer" parent="." unique_id=1131449456]
 script = ExtResource("100_level_ui")
 level_title = "Level 6"
+next_scene_path = "res://scenes/levels/level_7.tscn"
 prev_scene_path = "res://scenes/levels/level_5.tscn"
 
 [node name="Control" type="Control" parent="LevelUI" unique_id=1026593580]

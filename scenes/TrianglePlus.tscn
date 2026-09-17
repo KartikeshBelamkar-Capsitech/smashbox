@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://dwakhpu7eglvv"]
 
+[ext_resource type="Script" uid="uid://blxehi6455pde" path="res://scripts/box_target.gd" id="1_6kgap"]
+
 [sub_resource type="PrismMesh" id="PrismMesh_luvk5"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_luvk5"]
@@ -9,6 +11,8 @@ albedo_color = Color(0.7882353, 0.39607844, 1, 1)
 points = PackedVector3Array(0, 0.5, 0.5, 0.5, -0.5, 0.5, 0, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5)
 
 [node name="Triangle" type="RigidBody3D" unique_id=18766210]
+mass = 14.0
+script = ExtResource("1_6kgap")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1969685799]
 transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 1, 0, 0, 0)

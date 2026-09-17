@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://dav7mvbkhsx81" path="res://scenes/box-medium.tscn" id="2_box_medium"]
 [ext_resource type="PackedScene" uid="uid://bm0h2hm75ufq8" path="res://scenes/cylinder.tscn" id="2_d06uk"]
 [ext_resource type="PackedScene" uid="uid://b6c4al234gvpl" path="res://scenes/box.tscn" id="3_box"]
-[ext_resource type="Script" path="res://scripts/level_ui.gd" id="4_level_ui"]
+[ext_resource type="Script" uid="uid://cb435mwq2jsku" path="res://scripts/level_ui.gd" id="4_level_ui"]
 [ext_resource type="PackedScene" uid="uid://bsubs18a8g6no" path="res://scenes/Triangle.tscn" id="5_hq5i0"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
@@ -110,8 +110,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.050975323, 2.487688, 0)
 
 [node name="LevelUI" type="CanvasLayer" parent="." unique_id=361583710]
 script = ExtResource("4_level_ui")
-level_title = "Level 3 (Mixed Fortress)"
-prev_scene_path = "res://scenes/levels/level_2.tscn"
+level_title = "Level 7"
+next_scene_path = "res://scenes/levels/level_8.tscn"
+prev_scene_path = "res://scenes/levels/level_6.tscn"
 
 [node name="Control" type="Control" parent="LevelUI" unique_id=1202162757]
 layout_mode = 3
