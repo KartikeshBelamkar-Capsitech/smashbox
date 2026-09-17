@@ -20,6 +20,7 @@ var level_finished: bool = false
 var targets_remaining: int = 0
 var ammo_remaining: int = 15
 var active_balls: Array[Node] = []
+var _is_waiting_lose: bool = false
 
 
 func _ready() -> void:
@@ -72,10 +73,14 @@ func _on_ball_exited(ball: Node) -> void:
 
 
 func _check_lose_condition() -> void:
-	if ammo_remaining == 0 and not level_finished:
+	if ammo_remaining == 0 and active_balls.is_empty() and not level_finished and not _is_waiting_lose:
 		_check_level_state()
 		if not level_finished:
-			_show_lose_panel()
+			_is_waiting_lose = true
+			await get_tree().create_timer(2.0).timeout
+			if not level_finished:
+				_show_lose_panel()
+			_is_waiting_lose = false
 
 
 func _create_ammo_label() -> void:
@@ -119,15 +124,15 @@ func _show_result_panel(result_text: String, button_text: String, action: Callab
 	$Control.add_child(result_overlay)
 	result_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
+	var panel := PanelContainer.new()
+	panel.custom_minimum_size = Vector2(360, 220)
+	result_overlay.add_child(panel)
+
 	if result_text == "YOU WIN!":
 		var sparkles := SparkleEffect.new()
 		sparkles.name = "Sparkles"
 		sparkles.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		result_overlay.add_child(sparkles)
-
-	var panel := PanelContainer.new()
-	panel.custom_minimum_size = Vector2(360, 220)
-	result_overlay.add_child(panel)
 	panel.anchor_left = 0.5
 	panel.anchor_top = 0.5
 	panel.anchor_right = 0.5
