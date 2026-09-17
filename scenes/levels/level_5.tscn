@@ -53,7 +53,7 @@ fov = 60.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
 
 [node name="BoxPlatform" type="StaticBody3D" parent="." unique_id=1644563390]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.3303242, -12)
+transform = Transform3D(0.71668637, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.3303242, -12)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="BoxPlatform" unique_id=1160168816]
 transform = Transform3D(2.9083965, 1.509958e-07, 0, -4.3915566e-07, 1, 0, 0, 0, -3.3621898, 0, 0, 0)
