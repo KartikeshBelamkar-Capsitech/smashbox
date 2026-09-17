@@ -16,7 +16,7 @@ signal power_up_used(power_up: int)
 ## The projectile scene used for fire/explode power-up.
 @export var fire_ball_scene: PackedScene = preload("res://scenes/fire_ball.tscn")
 ## Speed at which balls are propelled outward.
-@export_range(10.0, 120.0, 1.0) var launch_speed: float = 50.0
+@export_range(10.0, 120.0, 1.0) var launch_speed: float = 30.0
 ## Optional explicit parent node where spawned balls will be added. If null, uses the active scene root.
 @export var projectile_container: Node3D = null
 
@@ -39,9 +39,9 @@ signal power_up_used(power_up: int)
 ## Distance in front of cannon where the virtual targeting plane is positioned (matches box stack distance).
 @export var aim_plane_distance: float = 12.0
 ## Yaw limits in degrees relative to initial rotation (Min: Left, Max: Right).
-@export var yaw_limits_deg: Vector2 = Vector2(-70.0, 70.0)
+@export var yaw_limits_deg: Vector2 = Vector2(-85.0, 85.0)
 ## Pitch limits in degrees (Min: Downwards, Max: Upwards).
-@export var pitch_limits_deg: Vector2 = Vector2(-28.0, 35.0)
+@export var pitch_limits_deg: Vector2 = Vector2(-55.0, 55.0)
 
 @export_group("Node References")
 ## Marker indicating where balls spawn and their initial forward trajectory.
@@ -64,6 +64,8 @@ var _barrel_initial_pos: Vector3 = Vector3.ZERO
 var _cannon_fixed_pos: Vector3 = Vector3.ZERO
 var _camera_initial_pos: Vector3 = Vector3.ZERO
 var _camera_shake_tween: Tween = null
+var _is_holding_screen: bool = false
+var _current_pointer_pos: Vector2 = Vector2.ZERO
 
 
 func _ready() -> void:
@@ -89,6 +91,16 @@ func _ready() -> void:
 		muzzle_effect = find_child("MuzzleEffect", true, false) as MuzzleEffect
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
+		_is_holding_screen = false
+
+
+## Cancels any ongoing continuous touch shooting.
+func stop_continuous_shooting() -> void:
+	_is_holding_screen = false
+
+
 func _process(delta: float) -> void:
 	# Ensure cannon position is strictly fixed at all times
 	position = _cannon_fixed_pos
@@ -98,35 +110,66 @@ func _process(delta: float) -> void:
 		
 	if enable_mouse_aim and _target_aim_point != Vector3.ZERO:
 		_apply_smooth_aim(delta)
+		
+	# Continuous shooting while user is holding the screen
+	if _is_holding_screen:
+		if not is_processing_unhandled_input():
+			_is_holding_screen = false
+		elif _cooldown_timer <= 0.0 and not is_reloading and not _is_burst_firing:
+			if not infinite_ammo and current_ammo <= 0:
+				_is_holding_screen = false
+			else:
+				_update_aim_target_from_screen(_current_pointer_pos)
+				shoot()
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not enable_mouse_aim:
 		return
 		
-	# Native support for mouse motion, touch taps, and touch drags on mobile
-	var pointer_pos: Vector2 = Vector2.ZERO
-	var has_pointer_pos: bool = false
-	
-	if event is InputEventMouse:
-		pointer_pos = event.position
-		has_pointer_pos = true
-	elif event is InputEventScreenTouch or event is InputEventScreenDrag:
-		pointer_pos = event.position
-		has_pointer_pos = true
-		
-	if has_pointer_pos:
-		_update_aim_target_from_mouse(pointer_pos)
-		
-	# Fire trigger: Left click, mobile screen tap, or custom "shoot" action
-	var is_shoot_action: bool = InputMap.has_action("shoot") and event.is_action_pressed("shoot")
-	var is_mouse_click: bool = event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed
-	var is_touch_press: bool = event is InputEventScreenTouch and event.pressed
-	
-	if is_shoot_action or is_mouse_click or is_touch_press:
-		if has_pointer_pos:
-			_update_aim_target_from_mouse(pointer_pos)
+	# 1. Direct Android Screen Touch:
+	# Touch down fires immediately and starts continuous shooting while held.
+	# Touch release stops continuous shooting.
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			_is_holding_screen = true
+			_current_pointer_pos = event.position
+			_update_aim_target_from_screen(event.position)
 			_snap_aim_to_target()
+			shoot()
+		else:
+			_is_holding_screen = false
+		return
+		
+	# 2. Android Screen Drag:
+	# Keep tracking aim smoothly while finger is dragged across the screen
+	if event is InputEventScreenDrag:
+		_current_pointer_pos = event.position
+		_update_aim_target_from_screen(event.position)
+		return
+		
+	# 3. Desktop Mouse Button:
+	# Left click fires immediately and holds continuous shoot until button release.
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				_is_holding_screen = true
+				_current_pointer_pos = event.position
+				_update_aim_target_from_screen(event.position)
+				_snap_aim_to_target()
+				shoot()
+			else:
+				_is_holding_screen = false
+		return
+		
+	# 4. Desktop Mouse Motion:
+	if event is InputEventMouseMotion:
+		_current_pointer_pos = event.position
+		_update_aim_target_from_screen(event.position)
+		return
+		
+	# 5. Keyboard / Gamepad "shoot" action (Spacebar, Gamepad Trigger)
+	if InputMap.has_action("shoot") and event.is_action_pressed("shoot"):
 		shoot()
 
 
@@ -186,11 +229,12 @@ func shoot() -> bool:
 			
 		ball_fired.emit(ball, shoot_dir * launch_speed)
 		
-	# Play recoil juice and muzzle blast
+	# Play recoil juice, muzzle blast, and mobile haptic pulse
 	_trigger_recoil()
 	if muzzle_effect:
 		muzzle_effect.play()
 	trigger_camera_shake(0.06, 0.12)
+	HapticManager.play_shot()
 	
 	return true
 
@@ -231,6 +275,7 @@ func _shoot_fire_explode() -> bool:
 	if muzzle_effect:
 		muzzle_effect.play()
 	trigger_camera_shake(0.2, 0.25)
+	HapticManager.play_explosion()
 	return true
 
 
@@ -264,6 +309,7 @@ func _shoot_triple_burst() -> void:
 		if muzzle_effect:
 			muzzle_effect.play()
 		trigger_camera_shake(0.08, 0.1)
+		HapticManager.play_burst_shot()
 		
 		if i < 2:
 			await get_tree().create_timer(0.09).timeout
@@ -313,11 +359,24 @@ func reload() -> void:
 	)
 
 
-## Calculates the normalized forward vector pointing directly toward the target aim point.
+## Calculates the ballistic drop compensation so the ball arrives exactly at the touch point.
+func _get_compensated_target(target_pt: Vector3) -> Vector3:
+	var origin: Vector3 = muzzle.global_position if muzzle else global_position
+	var to_target: Vector3 = target_pt - origin
+	var dist: float = to_target.length()
+	var flight_time: float = dist / maxf(launch_speed, 1.0)
+	# Gravity scale factor is 0.45, default gravity is 9.8 m/s^2
+	var gravity_mag: float = 9.8 * 0.45
+	var vertical_drop: float = 0.5 * gravity_mag * flight_time * flight_time
+	return target_pt + Vector3(0.0, vertical_drop, 0.0)
+
+
+## Calculates the normalized forward vector pointing directly toward the target aim point with ballistic compensation.
 func _get_shooting_direction() -> Vector3:
 	var origin: Vector3 = muzzle.global_position if muzzle else global_position
 	if _target_aim_point != Vector3.ZERO:
-		return (_target_aim_point - origin).normalized()
+		var compensated: Vector3 = _get_compensated_target(_target_aim_point)
+		return (compensated - origin).normalized()
 	if muzzle:
 		return -muzzle.global_transform.basis.z.normalized()
 	return -global_transform.basis.z.normalized()
@@ -373,50 +432,60 @@ func _create_fallback_ball() -> RigidBody3D:
 	return ball
 
 
-## Casts ray from 3D camera to world space to calculate target aim point.
-func _update_aim_target_from_mouse(mouse_pos: Vector2) -> void:
+## Casts ray from 3D camera to world space to calculate the exact 3D touch target point.
+func _update_aim_target_from_screen(screen_pos: Vector2) -> void:
 	if not aim_camera:
 		aim_camera = get_viewport().get_camera_3d()
 	if not aim_camera:
 		return
 		
-	var ray_origin: Vector3 = aim_camera.project_ray_origin(mouse_pos)
-	var ray_dir: Vector3 = aim_camera.project_ray_normal(mouse_pos)
+	var ray_origin: Vector3 = aim_camera.project_ray_origin(screen_pos)
+	var ray_dir: Vector3 = aim_camera.project_ray_normal(screen_pos)
 	
-	# Priority 1: Check if ray directly intersects a target RigidBody3D (like a box in the stack)
+	# Exclude in-flight cannon balls from blocking the touch ray
 	var space_state: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
-	var query := PhysicsRayQueryParameters3D.create(ray_origin, ray_origin + ray_dir * 100.0)
+	var query := PhysicsRayQueryParameters3D.create(ray_origin, ray_origin + ray_dir * 120.0)
+	var ball_nodes: Array[Node] = get_tree().get_nodes_in_group("cannon_balls")
+	var exclude_rids: Array[RID] = []
+	for b in ball_nodes:
+		if b is CollisionObject3D:
+			exclude_rids.append(b.get_rid())
+	query.exclude = exclude_rids
+	
 	var result: Dictionary = space_state.intersect_ray(query)
 	
-	if result.has("collider") and (result["collider"] is RigidBody3D):
+	# Priority 1: Check if ray directly intersects a target, crate, or platform at gameplay depth
+	if result.has("position") and result["position"].z <= global_position.z - 4.0:
 		_target_aim_point = result["position"]
 		return
 		
-	# Priority 2: Project mouse ray onto the vertical aiming plane at the box stack distance
-	# This prevents the cannon from aiming down into the floor near the player
+	# Priority 2: Project touch ray onto the vertical aiming plane at the box stack distance (z = -12.0)
 	var target_z: float = global_position.z - aim_plane_distance
 	if absf(ray_dir.z) > 0.0001:
 		var t: float = (target_z - ray_origin.z) / ray_dir.z
 		if t > 0.0:
-			var point: Vector3 = ray_origin + ray_dir * t
-			point.y = maxf(point.y, -0.5)
-			_target_aim_point = point
+			_target_aim_point = ray_origin + ray_dir * t
 			return
 			
 	_target_aim_point = ray_origin + ray_dir * aim_plane_distance
 
 
-## Instantly aligns the cannon orientation to current target (for responsive mobile tap shooting).
-func _snap_aim_to_target() -> void:
-	var look_target: Vector3 = _target_aim_point
-	var local_target: Vector3 = to_local(look_target)
-	
-	if local_target.length_squared() < 0.001:
-		return
+## Backward-compatible alias for mouse aim targeting.
+func _update_aim_target_from_mouse(mouse_pos: Vector2) -> void:
+	_update_aim_target_from_screen(mouse_pos)
+
+
+## Computes the target yaw and pitch angles towards a 3D point without transform distortion.
+func _get_target_angles(target_pt: Vector3) -> Vector2:
+	var aim_pt: Vector3 = _get_compensated_target(target_pt)
+	var diff: Vector3 = aim_pt - global_position
+	if diff.length_squared() < 0.001:
+		return Vector2(_initial_rotation_y, 0.0)
 		
-	var target_yaw: float = -atan2(local_target.x, -local_target.z)
-	var horizontal_dist: float = Vector2(local_target.x, local_target.z).length()
-	var target_pitch: float = atan2(local_target.y, horizontal_dist)
+	var rel: Vector3 = diff.rotated(Vector3.UP, -_initial_rotation_y)
+	var target_yaw: float = -atan2(rel.x, -rel.z)
+	var horizontal_dist: float = Vector2(rel.x, rel.z).length()
+	var target_pitch: float = atan2(rel.y, horizontal_dist)
 	
 	var min_yaw_rad: float = deg_to_rad(yaw_limits_deg.x)
 	var max_yaw_rad: float = deg_to_rad(yaw_limits_deg.y)
@@ -426,35 +495,25 @@ func _snap_aim_to_target() -> void:
 	var max_pitch_rad: float = deg_to_rad(pitch_limits_deg.y)
 	target_pitch = clampf(target_pitch, min_pitch_rad, max_pitch_rad)
 	
-	rotation.y = _initial_rotation_y + target_yaw
-	rotation.x = target_pitch
+	return Vector2(_initial_rotation_y + target_yaw, target_pitch)
+
+
+## Instantly aligns the cannon orientation to current target (for responsive mobile tap shooting).
+func _snap_aim_to_target() -> void:
+	if _target_aim_point == Vector3.ZERO:
+		return
+	var angles: Vector2 = _get_target_angles(_target_aim_point)
+	rotation.y = angles.x
+	rotation.x = angles.y
 
 
 ## Smoothly rotates the cannon towards the target point with angle limits.
 func _apply_smooth_aim(delta: float) -> void:
-	var look_target: Vector3 = _target_aim_point
-	var local_target: Vector3 = to_local(look_target)
-	
-	if local_target.length_squared() < 0.001:
+	if _target_aim_point == Vector3.ZERO:
 		return
-		
-	# Calculate target yaw and pitch
-	var target_yaw: float = -atan2(local_target.x, -local_target.z)
-	var horizontal_dist: float = Vector2(local_target.x, local_target.z).length()
-	var target_pitch: float = atan2(local_target.y, horizontal_dist)
-	
-	# Clamp angles to configured limits
-	var min_yaw_rad: float = deg_to_rad(yaw_limits_deg.x)
-	var max_yaw_rad: float = deg_to_rad(yaw_limits_deg.y)
-	target_yaw = clampf(target_yaw, min_yaw_rad, max_yaw_rad)
-	
-	var min_pitch_rad: float = deg_to_rad(pitch_limits_deg.x)
-	var max_pitch_rad: float = deg_to_rad(pitch_limits_deg.y)
-	target_pitch = clampf(target_pitch, min_pitch_rad, max_pitch_rad)
-	
-	# Smoothly rotate
-	rotation.y = lerp_angle(rotation.y, _initial_rotation_y + target_yaw, aim_lerp_speed * delta)
-	rotation.x = lerp_angle(rotation.x, target_pitch, aim_lerp_speed * delta)
+	var angles: Vector2 = _get_target_angles(_target_aim_point)
+	rotation.y = lerp_angle(rotation.y, angles.x, aim_lerp_speed * delta)
+	rotation.x = lerp_angle(rotation.x, angles.y, aim_lerp_speed * delta)
 
 
 ## Applies a punchy squash & stretch and backward kick recoil to the barrel.

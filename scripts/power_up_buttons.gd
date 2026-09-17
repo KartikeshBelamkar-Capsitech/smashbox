@@ -136,6 +136,7 @@ func _init_styles() -> void:
 
 
 func _on_left_button_pressed() -> void:
+	HapticManager.play_button_click()
 	if not cannon:
 		_find_cannon()
 	if not cannon:
@@ -149,6 +150,7 @@ func _on_left_button_pressed() -> void:
 
 
 func _on_right_button_pressed() -> void:
+	HapticManager.play_button_click()
 	if not cannon:
 		_find_cannon()
 	if not cannon:

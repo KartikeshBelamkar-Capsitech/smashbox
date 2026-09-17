@@ -118,6 +118,7 @@ func _on_action_pressed() -> void:
 	if _is_closing:
 		return
 	_is_closing = true
+	HapticManager.play_button_click()
 	
 	# Snappy pop-out animation
 	var tween := create_tween().set_parallel()

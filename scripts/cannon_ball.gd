@@ -6,10 +6,11 @@ extends RigidBody3D
 
 signal impacted(target: Node3D, contact_point: Vector3, contact_normal: Vector3)
 signal despawned()
+signal landed()
 
 @export_group("Ball Settings")
 ## Lifetime in seconds before the ball automatically frees itself.
-@export_range(1.0, 30.0, 0.5) var lifetime: float = 6.0
+@export_range(1.0, 30.0, 0.5) var lifetime: float = 1.5
 ## Minimum Y coordinate before despawning (falling off the world).
 @export var despawn_y_threshold: float = -20.0
 ## Impact damage or impulse multiplier transferred to hit boxes.
@@ -28,9 +29,11 @@ signal despawned()
 var _life_timer: float = 0.0
 var _is_despawning: bool = false
 var _last_impact_time: float = -1.0
+var _landed: bool = false
 
 
 func _ready() -> void:
+	add_to_group("cannon_balls")
 	# Configure physics for high-speed projectile reliability
 	continuous_cd = true
 	contact_monitor = true
@@ -44,9 +47,25 @@ func _physics_process(delta: float) -> void:
 	if _is_despawning:
 		return
 		
+	# Virtual floor check must happen even if it bounced off the platform
+	if global_position.y <= 0.22:
+		global_position.y = 0.22
+		if linear_velocity.y < 0:
+			linear_velocity.y = -linear_velocity.y * 0.4 # bounce
+		linear_damp = 1.5
+		angular_damp = 1.5
+		if not _landed:
+			_landed = true
+			landed.emit()
+		return
+		
+	if _landed:
+		return
+		
 	_life_timer += delta
 	if _life_timer >= lifetime or global_position.y <= despawn_y_threshold:
 		despawn()
+
 
 
 ## Launches the ball with a direct linear velocity.
@@ -77,18 +96,24 @@ func _on_body_entered(body: Node) -> void:
 	if _is_despawning:
 		return
 		
+	if body is StaticBody3D and not _landed:
+		_landed = true
+		landed.emit()
+		
 	var current_speed: float = linear_velocity.length()
 	var current_time: float = Time.get_ticks_msec() / 1000.0
 	var contact_point: Vector3 = global_position
 	var contact_normal: Vector3 = -linear_velocity.normalized()
 	
-	# Trigger impact VFX on solid hits (throttled to prevent redundant stacking)
+	# Trigger impact VFX and mobile haptics on solid hits (throttled to prevent redundant stacking)
 	if current_speed >= min_impact_speed and (current_time - _last_impact_time > 0.08):
 		_last_impact_time = current_time
 		_spawn_impact_vfx(contact_point, contact_normal)
+		HapticManager.play_impact()
 		
 	if body is Node3D:
 		impacted.emit(body, contact_point, contact_normal)
+
 
 
 ## Spawns the impact visual effect oriented along the collision normal.

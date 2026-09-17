@@ -8,4 +8,5 @@ func _ready() -> void:
 
 
 func _on_play_button_pressed() -> void:
+	HapticManager.play_button_click()
 	get_tree().change_scene_to_file(play_scene_path)
