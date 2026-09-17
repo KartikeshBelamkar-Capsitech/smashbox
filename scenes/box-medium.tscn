@@ -21,7 +21,7 @@ size = Vector3(0.9, 0.9, 0.9)
 albedo_color = Color(0.8600602, 0, 0.13646477, 1)
 
 [node name="Box" type="RigidBody3D" unique_id=1046794428]
-mass = 14.0
+mass = 30.0
 physics_material_override = SubResource("PhysicsMaterial_box")
 continuous_cd = true
 linear_damp = 0.6

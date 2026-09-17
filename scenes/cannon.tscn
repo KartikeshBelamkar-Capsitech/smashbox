@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://cxc81kt3wohlk"]
 
 [ext_resource type="Script" uid="uid://cv8sugbdy3jsc" path="res://scripts/cannon.gd" id="1_cannon_script"]
-[ext_resource type="PackedScene" path="res://scenes/cannon_ball.tscn" id="2_ball_scene"]
-[ext_resource type="PackedScene" uid="uid://mzl_eff_001" path="res://scenes/effects/muzzle_effect.tscn" id="3_muzzle_effect"]
+[ext_resource type="PackedScene" uid="uid://c8d45dm1rtaav" path="res://scenes/cannon_ball.tscn" id="2_ball_scene"]
+[ext_resource type="PackedScene" path="res://scenes/effects/muzzle_effect.tscn" id="3_muzzle_effect"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mount"]
 albedo_color = Color(0.12, 0.13, 0.15, 1)
@@ -21,14 +21,16 @@ roughness = 0.3
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_barrel"]
 material = SubResource("StandardMaterial3D_barrel")
-top_radius = 0.33
-bottom_radius = 0.36
-height = 1.0
+top_radius = 0.16
+bottom_radius = 0.16
+height = 0.7
 
 [node name="Cannon" type="Node3D" unique_id=1040816305 node_paths=PackedStringArray("muzzle", "barrel_mesh", "muzzle_effect")]
 script = ExtResource("1_cannon_script")
 ball_scene = ExtResource("2_ball_scene")
 launch_speed = 52.0
+infinite_ammo = false
+max_ammo = 15
 muzzle = NodePath("Muzzle")
 barrel_mesh = NodePath("Barrel")
 muzzle_effect = NodePath("Muzzle/MuzzleEffect")
@@ -42,6 +44,6 @@ transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 
 mesh = SubResource("CylinderMesh_barrel")
 
 [node name="Muzzle" type="Marker3D" parent="." unique_id=616870185]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.05)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.86)
 
-[node name="MuzzleEffect" parent="Muzzle" instance=ExtResource("3_muzzle_effect")]
+[node name="MuzzleEffect" parent="Muzzle" unique_id=1150093151 instance=ExtResource("3_muzzle_effect")]
