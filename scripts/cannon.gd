@@ -7,10 +7,14 @@ signal ball_fired(ball: RigidBody3D, launch_velocity: Vector3)
 signal ammo_changed(remaining_ammo: int)
 signal out_of_ammo()
 signal reloaded()
+signal power_up_changed(power_up: int)
+signal power_up_used(power_up: int)
 
 @export_group("Projectile Settings")
 ## The projectile scene to instantiate (e.g. cannon_ball.tscn).
 @export var ball_scene: PackedScene
+## The projectile scene used for fire/explode power-up.
+@export var fire_ball_scene: PackedScene = preload("res://scenes/fire_ball.tscn")
 ## Speed at which balls are propelled outward.
 @export_range(10.0, 120.0, 1.0) var launch_speed: float = 50.0
 ## Optional explicit parent node where spawned balls will be added. If null, uses the active scene root.
@@ -51,6 +55,8 @@ signal reloaded()
 
 var current_ammo: int = 15
 var is_reloading: bool = false
+var active_power_up: int = PowerUp.Type.NONE
+var _is_burst_firing: bool = false
 var _cooldown_timer: float = 0.0
 var _initial_rotation_y: float = 0.0
 var _target_aim_point: Vector3 = Vector3.ZERO
@@ -115,11 +121,37 @@ func _unhandled_input(event: InputEvent) -> void:
 		shoot()
 
 
+## Sets the current active power-up.
+func set_power_up(p_type: int) -> void:
+	active_power_up = p_type
+	power_up_changed.emit(active_power_up)
+
+
+## Gets the current active power-up.
+func get_power_up() -> int:
+	return active_power_up
+
+
 ## Primary function to fire a projectile.
 ## Returns true if a ball was successfully fired.
 func shoot() -> bool:
-	if _cooldown_timer > 0.0 or is_reloading:
+	if _cooldown_timer > 0.0 or is_reloading or _is_burst_firing:
 		return false
+		
+	# Check for special power-up shots
+	if active_power_up == PowerUp.Type.FIRE_EXPLODE:
+		var power_fired: int = active_power_up
+		active_power_up = PowerUp.Type.NONE
+		power_up_used.emit(power_fired)
+		power_up_changed.emit(active_power_up)
+		return _shoot_fire_explode()
+	elif active_power_up == PowerUp.Type.TRIPLE_SHOT:
+		var power_fired: int = active_power_up
+		active_power_up = PowerUp.Type.NONE
+		power_up_used.emit(power_fired)
+		power_up_changed.emit(active_power_up)
+		_shoot_triple_burst()
+		return true
 		
 	if not infinite_ammo:
 		if current_ammo <= 0:
@@ -149,8 +181,104 @@ func shoot() -> bool:
 	_trigger_recoil()
 	if muzzle_effect:
 		muzzle_effect.play()
+	trigger_camera_shake(0.06, 0.12)
 	
 	return true
+
+
+## Fires a fire/explode shot that detonates with fiery blast flinging all objects.
+func _shoot_fire_explode() -> bool:
+	if not infinite_ammo:
+		if current_ammo <= 0:
+			out_of_ammo.emit()
+			if auto_reload:
+				reload()
+			return false
+		current_ammo -= 1
+		ammo_changed.emit(current_ammo)
+		
+	_cooldown_timer = fire_cooldown
+	
+	var spawn_pos: Vector3 = muzzle.global_position if muzzle else global_position
+	var scene_to_use: PackedScene = fire_ball_scene if fire_ball_scene else ball_scene
+	var ball_node: Node = scene_to_use.instantiate() if scene_to_use else _create_fallback_ball()
+	
+	if ball_node is RigidBody3D:
+		var parent: Node = projectile_container if projectile_container else get_tree().current_scene
+		if not parent:
+			parent = get_tree().root
+		parent.add_child(ball_node)
+		ball_node.global_position = spawn_pos
+		
+		var shoot_dir: Vector3 = _get_shooting_direction()
+		if ball_node is CannonBall:
+			ball_node.launch(shoot_dir, launch_speed * 1.05)
+		else:
+			ball_node.linear_velocity = shoot_dir * launch_speed * 1.05
+			
+		ball_fired.emit(ball_node, shoot_dir * launch_speed * 1.05)
+		
+	_trigger_recoil()
+	if muzzle_effect:
+		muzzle_effect.play()
+	trigger_camera_shake(0.2, 0.25)
+	return true
+
+
+## Rapidly fires 3 balls one by one in succession.
+func _shoot_triple_burst() -> void:
+	_is_burst_firing = true
+	_cooldown_timer = fire_cooldown + 0.35
+	
+	var angles: Array[float] = [-1.5, 0.0, 1.5]
+	for i in range(3):
+		if not infinite_ammo:
+			if current_ammo <= 0:
+				out_of_ammo.emit()
+				break
+			current_ammo -= 1
+			ammo_changed.emit(current_ammo)
+			
+		var ball: RigidBody3D = _spawn_ball()
+		if ball:
+			var base_dir: Vector3 = _get_shooting_direction()
+			var spread_dir: Vector3 = base_dir.rotated(Vector3.UP, deg_to_rad(angles[i]))
+			if ball is CannonBall:
+				ball.launch(spread_dir, launch_speed)
+			else:
+				ball.linear_velocity = spread_dir * launch_speed
+			ball_fired.emit(ball, spread_dir * launch_speed)
+			
+		_trigger_recoil()
+		if muzzle_effect:
+			muzzle_effect.play()
+		trigger_camera_shake(0.08, 0.1)
+		
+		if i < 2:
+			await get_tree().create_timer(0.09).timeout
+			
+	_is_burst_firing = false
+
+
+## Applies subtle dynamic camera recoil juice.
+func trigger_camera_shake(strength: float = 0.12, duration: float = 0.2) -> void:
+	if not aim_camera:
+		aim_camera = get_viewport().get_camera_3d()
+	if not aim_camera:
+		return
+		
+	var orig_pos: Vector3 = aim_camera.position
+	var tween: Tween = create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	var steps: int = 4
+	var step_dur: float = duration / float(steps)
+	for i in range(steps):
+		var offset: Vector3 = Vector3(
+			randf_range(-strength, strength),
+			randf_range(-strength, strength),
+			randf_range(-strength * 0.5, strength * 0.5)
+		)
+		tween.tween_property(aim_camera, "position", orig_pos + offset, step_dur)
+	tween.tween_property(aim_camera, "position", orig_pos, 0.05)
 
 
 ## Reloads ammo count back to max.

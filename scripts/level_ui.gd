@@ -12,6 +12,11 @@ extends CanvasLayer
 @onready var restart_btn: Button = $Control/RestartButton
 
 
+@export var power_up_buttons_scene: PackedScene = preload("res://scenes/ui/power_up_buttons.tscn")
+
+var power_up_buttons_instance: Control = null
+
+
 func _ready() -> void:
 	if title_label:
 		title_label.text = level_title
@@ -26,6 +31,22 @@ func _ready() -> void:
 		
 	if restart_btn:
 		restart_btn.pressed.connect(_on_restart_pressed)
+		
+	_spawn_power_up_buttons()
+
+
+func _spawn_power_up_buttons() -> void:
+	if not power_up_buttons_scene:
+		return
+	var ctrl: Node = find_child("Control", true, false)
+	if not ctrl:
+		ctrl = self
+	power_up_buttons_instance = power_up_buttons_scene.instantiate() as Control
+	if power_up_buttons_instance:
+		ctrl.add_child(power_up_buttons_instance)
+		var cannon: Node = get_parent().find_child("Cannon", true, false)
+		if cannon and power_up_buttons_instance.has_method("set_cannon"):
+			power_up_buttons_instance.call("set_cannon", cannon)
 
 
 func _on_next_pressed() -> void:
