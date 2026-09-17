@@ -40,6 +40,7 @@ func _process(delta: float) -> void:
 
 func _draw() -> void:
 	var center := size * 0.5
+	center.y -= 150.0
 	var cycle_time := fmod(elapsed, 3.8)
 	var gravity := 780.0
 	for index in launch_velocities.size():
