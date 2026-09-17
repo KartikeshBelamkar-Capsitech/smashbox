@@ -185,6 +185,7 @@ func _show_win_panel() -> void:
 	level_finished = true
 	if cannon:
 		cannon.set_process_unhandled_input(false)
+		cannon.stop_continuous_shooting()
 	HapticManager.play_win(get_tree())
 	var button_text: String = "QUIT" if next_scene_path.is_empty() else "NEXT LEVEL"
 	_show_result_panel("YOU WIN!", button_text, _on_win_action_pressed)
@@ -194,6 +195,7 @@ func _show_lose_panel() -> void:
 	level_finished = true
 	if cannon:
 		cannon.set_process_unhandled_input(false)
+		cannon.stop_continuous_shooting()
 	HapticManager.play_lose()
 	_show_result_panel("YOU LOSE!", "PLAY AGAIN", _on_play_again_pressed)
 

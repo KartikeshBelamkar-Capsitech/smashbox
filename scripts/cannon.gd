@@ -64,6 +64,8 @@ var _barrel_initial_pos: Vector3 = Vector3.ZERO
 var _cannon_fixed_pos: Vector3 = Vector3.ZERO
 var _camera_initial_pos: Vector3 = Vector3.ZERO
 var _camera_shake_tween: Tween = null
+var _is_holding_screen: bool = false
+var _current_pointer_pos: Vector2 = Vector2.ZERO
 
 
 func _ready() -> void:
@@ -89,6 +91,16 @@ func _ready() -> void:
 		muzzle_effect = find_child("MuzzleEffect", true, false) as MuzzleEffect
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
+		_is_holding_screen = false
+
+
+## Cancels any ongoing continuous touch shooting.
+func stop_continuous_shooting() -> void:
+	_is_holding_screen = false
+
+
 func _process(delta: float) -> void:
 	# Ensure cannon position is strictly fixed at all times
 	position = _cannon_fixed_pos
@@ -98,6 +110,17 @@ func _process(delta: float) -> void:
 		
 	if enable_mouse_aim and _target_aim_point != Vector3.ZERO:
 		_apply_smooth_aim(delta)
+		
+	# Continuous shooting while user is holding the screen
+	if _is_holding_screen:
+		if not is_processing_unhandled_input():
+			_is_holding_screen = false
+		elif _cooldown_timer <= 0.0 and not is_reloading and not _is_burst_firing:
+			if not infinite_ammo and current_ammo <= 0:
+				_is_holding_screen = false
+			else:
+				_update_aim_target_from_screen(_current_pointer_pos)
+				shoot()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -105,30 +128,43 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 		
 	# 1. Direct Android Screen Touch:
-	# When user taps anywhere on screen, instantly aim at that touch point and shoot!
+	# Touch down fires immediately and starts continuous shooting while held.
+	# Touch release stops continuous shooting.
 	if event is InputEventScreenTouch:
 		if event.pressed:
+			_is_holding_screen = true
+			_current_pointer_pos = event.position
 			_update_aim_target_from_screen(event.position)
 			_snap_aim_to_target()
 			shoot()
+		else:
+			_is_holding_screen = false
 		return
 		
 	# 2. Android Screen Drag:
-	# Keep tracking aim smoothly while dragging finger across the screen
+	# Keep tracking aim smoothly while finger is dragged across the screen
 	if event is InputEventScreenDrag:
+		_current_pointer_pos = event.position
 		_update_aim_target_from_screen(event.position)
 		return
 		
-	# 3. Desktop Mouse Button Click:
+	# 3. Desktop Mouse Button:
+	# Left click fires immediately and holds continuous shoot until button release.
 	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			_update_aim_target_from_screen(event.position)
-			_snap_aim_to_target()
-			shoot()
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				_is_holding_screen = true
+				_current_pointer_pos = event.position
+				_update_aim_target_from_screen(event.position)
+				_snap_aim_to_target()
+				shoot()
+			else:
+				_is_holding_screen = false
 		return
 		
 	# 4. Desktop Mouse Motion:
 	if event is InputEventMouseMotion:
+		_current_pointer_pos = event.position
 		_update_aim_target_from_screen(event.position)
 		return
 		
