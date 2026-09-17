@@ -24,6 +24,7 @@ var _is_waiting_lose: bool = false
 
 
 @export var power_up_buttons_scene: PackedScene = preload("res://scenes/ui/power_up_buttons.tscn")
+@export var unlock_modal_scene: PackedScene = preload("res://scenes/ui/power_up_unlock_modal.tscn")
 
 var power_up_buttons_instance: Control = null
 
@@ -58,6 +59,9 @@ func _spawn_power_up_buttons() -> void:
 		var lvl_num: int = _get_current_level_number()
 		if power_up_buttons_instance.has_method("configure_for_level"):
 			power_up_buttons_instance.call("configure_for_level", lvl_num)
+			
+		# Check if this level unlocks a milestone power-up (Level 4: Triple, Level 7: Explode)
+		_check_power_up_unlock_celebration(lvl_num)
 
 	_create_ammo_label()
 	if cannon:
@@ -66,6 +70,37 @@ func _spawn_power_up_buttons() -> void:
 		_on_ammo_changed(cannon.current_ammo)
 
 	call_deferred("_check_level_state")
+
+
+func _check_power_up_unlock_celebration(lvl_num: int) -> void:
+	if not unlock_modal_scene:
+		return
+		
+	var power_up_to_unlock: int = PowerUp.Type.NONE
+	if lvl_num == 4:
+		power_up_to_unlock = PowerUp.Type.TRIPLE_SHOT
+	elif lvl_num == 7:
+		power_up_to_unlock = PowerUp.Type.FIRE_EXPLODE
+		
+	if power_up_to_unlock == PowerUp.Type.NONE:
+		return
+		
+	# Prevent firing while modal is open
+	if cannon:
+		cannon.set_process_unhandled_input(false)
+		
+	var ctrl: Node = find_child("Control", true, false)
+	if not ctrl:
+		ctrl = self
+		
+	var modal: Node = unlock_modal_scene.instantiate()
+	ctrl.add_child(modal)
+	
+	if modal.has_method("setup"):
+		modal.call("setup", power_up_to_unlock, func() -> void:
+			if cannon:
+				cannon.set_process_unhandled_input(true)
+		)
 
 
 func _get_current_level_number() -> int:
