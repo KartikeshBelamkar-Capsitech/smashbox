@@ -61,11 +61,15 @@ var _cooldown_timer: float = 0.0
 var _initial_rotation_y: float = 0.0
 var _target_aim_point: Vector3 = Vector3.ZERO
 var _barrel_initial_pos: Vector3 = Vector3.ZERO
+var _cannon_fixed_pos: Vector3 = Vector3.ZERO
+var _camera_initial_pos: Vector3 = Vector3.ZERO
+var _camera_shake_tween: Tween = null
 
 
 func _ready() -> void:
 	current_ammo = max_ammo
 	_initial_rotation_y = rotation.y
+	_cannon_fixed_pos = position
 	
 	if not barrel_mesh:
 		barrel_mesh = find_child("Barrel", true, false) as Node3D
@@ -74,6 +78,8 @@ func _ready() -> void:
 		
 	if not aim_camera:
 		aim_camera = get_viewport().get_camera_3d()
+	if aim_camera:
+		_camera_initial_pos = aim_camera.position
 		
 	# Fallback: find child Marker3D if muzzle wasn't explicitly assigned
 	if not muzzle:
@@ -84,6 +90,9 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	# Ensure cannon position is strictly fixed at all times
+	position = _cannon_fixed_pos
+	
 	if _cooldown_timer > 0.0:
 		_cooldown_timer -= delta
 		
@@ -262,25 +271,30 @@ func _shoot_triple_burst() -> void:
 	_is_burst_firing = false
 
 
-## Applies subtle dynamic camera recoil juice.
-func trigger_camera_shake(strength: float = 0.12, duration: float = 0.2) -> void:
+## Applies subtle dynamic camera recoil shake via camera offset without shifting position.
+func trigger_camera_shake(strength: float = 0.08, duration: float = 0.15) -> void:
 	if not aim_camera:
 		aim_camera = get_viewport().get_camera_3d()
 	if not aim_camera:
 		return
 		
-	var orig_pos: Vector3 = aim_camera.position
-	var tween: Tween = create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	var steps: int = 4
+	# Ensure camera position is permanently anchored to its initial position
+	if _camera_initial_pos != Vector3.ZERO:
+		aim_camera.position = _camera_initial_pos
+		
+	if _camera_shake_tween and _camera_shake_tween.is_valid():
+		_camera_shake_tween.kill()
+		
+	_camera_shake_tween = create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	var steps: int = 3
 	var step_dur: float = duration / float(steps)
 	for i in range(steps):
-		var offset: Vector3 = Vector3(
-			randf_range(-strength, strength),
-			randf_range(-strength, strength),
-			randf_range(-strength * 0.5, strength * 0.5)
-		)
-		tween.tween_property(aim_camera, "position", orig_pos + offset, step_dur)
-	tween.tween_property(aim_camera, "position", orig_pos, 0.05)
+		var h_off: float = randf_range(-strength, strength)
+		var v_off: float = randf_range(-strength * 0.7, strength * 0.7)
+		_camera_shake_tween.tween_property(aim_camera, "h_offset", h_off, step_dur)
+		_camera_shake_tween.tween_property(aim_camera, "v_offset", v_off, step_dur)
+	_camera_shake_tween.tween_property(aim_camera, "h_offset", 0.0, 0.04)
+	_camera_shake_tween.tween_property(aim_camera, "v_offset", 0.0, 0.04)
 
 
 ## Reloads ammo count back to max.

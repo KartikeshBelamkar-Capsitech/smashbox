@@ -13,54 +13,61 @@ var _has_exploded: bool = false
 
 func _ready() -> void:
 	super._ready()
-	# Fireballs can trigger on any body contact
 	body_entered.connect(_on_fire_contact)
 
 
-func _physics_process(delta: float) -> void:
-	super._physics_process(delta)
-	# If the fireball reaches the stack depth (Z <= -11.5) without direct collision, detonate!
-	if not _has_exploded and global_position.z <= -11.5:
-		detonate()
-
-
-func _on_fire_contact(_body: Node) -> void:
+func _on_fire_contact(body: Node) -> void:
 	if _has_exploded:
 		return
-	detonate()
-
-
-func despawn() -> void:
-	if not _has_exploded:
-		detonate()
+		
+	if _is_table_or_target(body):
+		# Directly hit table platform or target objects: explode table objects!
+		detonate(true)
 	else:
-		super.despawn()
+		# Hit off-target (e.g. distant floor or obstacle): local VFX only, table objects untouched
+		detonate(false)
 
 
-## Triggers the explosive detonation at current position.
-func detonate() -> void:
+## Triggers the explosive detonation. If should_explode_table is true, flings table objects.
+func detonate(should_explode_table: bool = true) -> void:
 	if _has_exploded:
 		return
 	_has_exploded = true
 	
 	var blast_pos: Vector3 = global_position
 	
-	# Spawn explosion VFX
+	# Spawn explosion VFX at contact point
 	if explosion_scene:
 		var exp_effect := explosion_scene.instantiate() as Node3D
 		if exp_effect:
 			get_tree().root.add_child(exp_effect)
 			exp_effect.global_position = blast_pos
 			
-	# Emit signal so cannon or level can apply extra table-wide clearing logic
 	exploded.emit(blast_pos)
 	
-	# Detonate all rigidbodies in the stack / table area
-	_explode_table_objects(blast_pos)
+	# Only fling table objects if target or table platform was struck
+	if should_explode_table:
+		_explode_table_objects(blast_pos)
 	
 	# Despawn the ball immediately
 	fade_out_on_despawn = false
 	despawn()
+
+
+## Determines if the contacted physics body belongs to the table or target stack.
+func _is_table_or_target(body: Node) -> bool:
+	if not body:
+		return false
+	if body is BoxTarget:
+		return true
+	if body.name == "BoxPlatform" or body.name.begins_with("BoxPlatform"):
+		return true
+	var parent: Node = body.get_parent()
+	while parent:
+		if parent.name == "BoxStack" or parent.name == "BoxPlatform":
+			return true
+		parent = parent.get_parent()
+	return false
 
 
 ## Applies dramatic outward and upward explosive impulses to all target objects.

@@ -12,7 +12,6 @@ signal dismissed()
 @onready var title_label: Label = $Card/MarginContainer/VBoxContainer/TitleLabel
 @onready var punchline_label: Label = $Card/MarginContainer/VBoxContainer/PunchlineLabel
 @onready var action_button: Button = $Card/MarginContainer/VBoxContainer/ActionButton
-@onready var confetti_container: Control = $ConfettiContainer
 
 var _dismiss_callback: Callable = Callable()
 var _is_closing: bool = false
@@ -27,9 +26,6 @@ func _ready() -> void:
 ## Configures the modal for either Triple Shot or Explode power-up.
 func setup(power_up_type: int, on_dismiss_callback: Callable = Callable()) -> void:
 	_dismiss_callback = on_dismiss_callback
-	
-	# Spawn lightweight celebratory confetti
-	_spawn_confetti()
 	
 	# Configure styling and copy
 	if power_up_type == PowerUp.Type.TRIPLE_SHOT:
@@ -91,15 +87,6 @@ func _apply_button_style(btn: Button, bg: Color, border: Color) -> void:
 	btn.add_theme_stylebox_override("normal", style)
 	btn.add_theme_stylebox_override("hover", style)
 	btn.add_theme_stylebox_override("pressed", style)
-
-
-func _spawn_confetti() -> void:
-	if not confetti_container:
-		return
-	var sparkles := SparkleEffect.new()
-	sparkles.name = "Sparkles"
-	sparkles.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	confetti_container.add_child(sparkles)
 
 
 func _animate_entrance() -> void:
