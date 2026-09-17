@@ -1,8 +1,8 @@
-[gd_scene format=3 uid="uid://lv2_boxsmash_002"]
+[gd_scene format=3 uid="uid://cbwtp5y3b7cl3"]
 
 [ext_resource type="PackedScene" uid="uid://cxc81kt3wohlk" path="res://scenes/cannon.tscn" id="1_cannon"]
 [ext_resource type="PackedScene" uid="uid://dav7mvbkhsx81" path="res://scenes/box-medium.tscn" id="2_box_medium"]
-[ext_resource type="Script" path="res://scripts/level_ui.gd" id="3_level_ui"]
+[ext_resource type="Script" uid="uid://cb435mwq2jsku" path="res://scripts/level_ui.gd" id="3_level_ui"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.38, 0.65, 0.98, 1)
@@ -33,67 +33,67 @@ size = Vector3(4.2, 12, 3.5)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_floor"]
 
-[node name="Level2" type="Node3D"]
+[node name="Level2" type="Node3D" unique_id=2083984144]
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2025099233]
 environment = SubResource("Environment_main")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=2031217593]
 transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 15, 0)
 shadow_enabled = true
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.9702958, 0.24192195, 0, -0.24192195, 0.9702958, 0, 7.930943, 0.7371763)
+[node name="Camera3D" type="Camera3D" parent="." unique_id=832118904]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.053, 0.38)
 keep_aspect = 0
 current = true
-fov = 68.0
+fov = 60.0
 
-[node name="Cannon" parent="." instance=ExtResource("1_cannon")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.774109, 0)
+[node name="Cannon" parent="." unique_id=1586852620 instance=ExtResource("1_cannon")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
 
-[node name="BoxPlatform" type="StaticBody3D" parent="."]
+[node name="BoxPlatform" type="StaticBody3D" parent="." unique_id=1341741217]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.3303242, -12)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="BoxPlatform"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BoxPlatform" unique_id=1608957235]
 transform = Transform3D(2.9083965, 1.509958e-07, 0, -4.3915566e-07, 1, 0, 0, 0, -3.3621898, 0, 0, 0)
 shape = SubResource("BoxShape3D_platform")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="BoxPlatform"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="BoxPlatform" unique_id=677765106]
 transform = Transform3D(2.7416167, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0, 9.536743e-07, 0)
 mesh = SubResource("BoxMesh_platform")
 
-[node name="FloorPlane" type="MeshInstance3D" parent="."]
+[node name="FloorPlane" type="MeshInstance3D" parent="." unique_id=1471503246]
 transform = Transform3D(20.781864, 0, 0, 0, 1, 0, 0, 0, -21.071466, 0, 0, -6.725843)
 mesh = SubResource("PlaneMesh_floor")
 
-[node name="BoxStack" type="Node3D" parent="."]
+[node name="BoxStack" type="Node3D" parent="." unique_id=830616799]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.669676, -11.98)
 
-[node name="Beam_Base_Left" parent="BoxStack" instance=ExtResource("2_box_medium")]
+[node name="Beam_Base_Left" parent="BoxStack" unique_id=1398913504 instance=ExtResource("2_box_medium")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 0.45, 0)
 
-[node name="Beam_Base_Right" parent="BoxStack" instance=ExtResource("2_box_medium")]
+[node name="Beam_Base_Right" parent="BoxStack" unique_id=709456370 instance=ExtResource("2_box_medium")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0.45, 0)
 
-[node name="Beam_Bridge_Center" parent="BoxStack" instance=ExtResource("2_box_medium")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 1.35, 0)
+[node name="Beam_Bridge_Center" parent="BoxStack" unique_id=1992771051 instance=ExtResource("2_box_medium")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, 0)
 
-[node name="Beam_Tier2_Left" parent="BoxStack" instance=ExtResource("2_box_medium")]
+[node name="Beam_Tier2_Left" parent="BoxStack" unique_id=253753328 instance=ExtResource("2_box_medium")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 2.25, 0)
 
-[node name="Beam_Tier2_Right" parent="BoxStack" instance=ExtResource("2_box_medium")]
+[node name="Beam_Tier2_Right" parent="BoxStack" unique_id=984372709 instance=ExtResource("2_box_medium")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 2.25, 0)
 
-[node name="Beam_Top_Crown" parent="BoxStack" instance=ExtResource("2_box_medium")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 3.15, 0)
+[node name="Beam_Top_Crown" parent="BoxStack" unique_id=770906273 instance=ExtResource("2_box_medium")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.15, 0)
 
-[node name="LevelUI" type="CanvasLayer" parent="."]
+[node name="LevelUI" type="CanvasLayer" parent="." unique_id=1525749025]
 script = ExtResource("3_level_ui")
 level_title = "Level 2 (Medium Girders Arch)"
 next_scene_path = "res://scenes/levels/level_3.tscn"
 prev_scene_path = "res://scenes/levels/level_1.tscn"
 
-[node name="Control" type="Control" parent="LevelUI"]
+[node name="Control" type="Control" parent="LevelUI" unique_id=1922872198]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -102,7 +102,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="TitleLabel" type="Label" parent="LevelUI/Control"]
+[node name="TitleLabel" type="Label" parent="LevelUI/Control" unique_id=1316164429]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -117,7 +117,7 @@ text = "Level 2 (Medium Girders Arch)"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="NextButton" type="Button" parent="LevelUI/Control"]
+[node name="NextButton" type="Button" parent="LevelUI/Control" unique_id=1192554909]
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
@@ -130,7 +130,7 @@ grow_horizontal = 0
 theme_override_font_sizes/font_size = 18
 text = "Next >"
 
-[node name="PrevButton" type="Button" parent="LevelUI/Control"]
+[node name="PrevButton" type="Button" parent="LevelUI/Control" unique_id=1457092606]
 layout_mode = 1
 offset_left = 24.0
 offset_top = 28.0
@@ -139,7 +139,7 @@ offset_bottom = 72.0
 theme_override_font_sizes/font_size = 18
 text = "< Prev"
 
-[node name="RestartButton" type="Button" parent="LevelUI/Control"]
+[node name="RestartButton" type="Button" parent="LevelUI/Control" unique_id=1634340141]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://b4q2q8r0ve1u2"]
 
-[ext_resource type="PackedScene" path="res://scenes/cannon.tscn" id="1_cannon_scene"]
-[ext_resource type="PackedScene" path="res://scenes/box.tscn" id="2_box_scene"]
+[ext_resource type="PackedScene" uid="uid://cxc81kt3wohlk" path="res://scenes/cannon.tscn" id="1_cannon_scene"]
+[ext_resource type="PackedScene" uid="uid://b6c4al234gvpl" path="res://scenes/box.tscn" id="2_box_scene"]
 [ext_resource type="PackedScene" uid="uid://dav7mvbkhsx81" path="res://scenes/box-medium.tscn" id="3_box_medium_scene"]
 [ext_resource type="Script" uid="uid://cb435mwq2jsku" path="res://scripts/level_ui.gd" id="100_level_ui"]
 
@@ -34,7 +34,7 @@ size = Vector3(4.2, 12, 3.5)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_ground"]
 
-[node name="Level2" type="Node3D" unique_id=1380719547]
+[node name="Level4" type="Node3D" unique_id=1380719547]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=614978780]
 environment = SubResource("Environment_main")
@@ -44,13 +44,13 @@ transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0
 shadow_enabled = true
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=454947315]
-transform = Transform3D(1, 0, 0, 0, 0.9702958, 0.24192195, 0, -0.24192195, 0.9702958, 0, 7.930943, 0.7371763)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.053, 0.38)
 keep_aspect = 0
 current = true
-fov = 68.0
+fov = 60.0
 
 [node name="Cannon" parent="." unique_id=582024406 instance=ExtResource("1_cannon_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.774109, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
 
 [node name="BoxPlatform" type="StaticBody3D" parent="." unique_id=827419423]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.3303242, -12)
