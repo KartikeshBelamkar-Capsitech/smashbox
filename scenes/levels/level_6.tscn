@@ -67,7 +67,7 @@ mesh = SubResource("BoxMesh_platform")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1371408, 4.669676, -11.98)
 
 [node name="Box_L1_1" parent="BoxStack" unique_id=1530350981 instance=ExtResource("2_ku6r7")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.16, 2.243, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 2.243, 0)
 
 [node name="Box_L1_2" parent="BoxStack" unique_id=1975626723 instance=ExtResource("2_ku6r7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3, 0.409, -0.011)
@@ -76,13 +76,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3, 0.409, -0.011)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3, 1.295, 0)
 
 [node name="Box_L1_4" parent="BoxStack" unique_id=745960183 instance=ExtResource("2_ku6r7")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15674448, 0.4499998, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0.45, 0)
 
 [node name="Box_L2_1" parent="BoxStack" unique_id=191105600 instance=ExtResource("2_ku6r7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3, 2.112, 0)
 
 [node name="Box_L2_2" parent="BoxStack" unique_id=366186629 instance=ExtResource("2_ku6r7")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.16, 1.35, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 1.35, 0)
 
 [node name="BoxMedium_L2_3" parent="BoxStack" unique_id=1839027282 instance=ExtResource("3_hi6ks")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.076613, 3.0296926, 0)
@@ -100,22 +100,22 @@ transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 3.2,
 transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 3.2, 3.3165827, 0)
 
 [node name="BoxMedium_L3_4" parent="BoxStack" unique_id=1931346996 instance=ExtResource("3_hi6ks")]
-transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, -1.05, 1.093, 0)
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, -1.1032767, 1.106, 0)
 
 [node name="BoxMedium_L3_5" parent="BoxStack" unique_id=1254260774 instance=ExtResource("3_hi6ks")]
-transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, -1.05, 3.34, 0)
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, -1.1021919, 3.3400002, 0)
 
 [node name="Box_L4_1" parent="BoxStack" unique_id=1136419987 instance=ExtResource("2_ku6r7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45681, 0.39224195, 0)
 
 [node name="Box_L4_2" parent="BoxStack" unique_id=373101236 instance=ExtResource("2_ku6r7")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.36190176, 3.9149065, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.38492417, 3.9149065, 0)
 
 [node name="Box_L4_3" parent="BoxStack" unique_id=1695183740 instance=ExtResource("2_ku6r7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.7438912, 3.9300318, 0)
 
 [node name="Box_L4_4" parent="BoxStack" unique_id=179534457 instance=ExtResource("2_ku6r7")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.05, 4.918, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 4.918, 0)
 
 [node name="Box_L4_5" parent="BoxStack" unique_id=1118924010 instance=ExtResource("2_ku6r7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 4.882, 0)
