@@ -165,10 +165,28 @@ func _check_lose_condition() -> void:
 		_check_level_state()
 		if not level_finished:
 			_is_waiting_lose = true
-			await tree.create_timer(0.0001).timeout
-			if not level_finished:
+			var elapsed: float = 0.0
+			while elapsed < 3.0:
+				await tree.create_timer(0.25).timeout
+				elapsed += 0.25
+				_check_level_state()
+				if level_finished or not _are_targets_moving():
+					break
+			if not level_finished and ammo_remaining == 0 and active_balls.is_empty():
 				_show_lose_panel()
 			_is_waiting_lose = false
+
+
+func _are_targets_moving() -> bool:
+	var tree := get_tree()
+	if not tree:
+		return false
+	var targets := tree.get_nodes_in_group("level_targets")
+	for t in targets:
+		if t is RigidBody3D:
+			if not t.sleeping and t.linear_velocity.length_squared() > 0.05:
+				return true
+	return false
 
 
 func _create_ammo_label() -> void:
