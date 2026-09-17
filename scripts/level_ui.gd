@@ -130,7 +130,10 @@ func _process(_delta: float) -> void:
 
 
 func _check_level_state() -> void:
-	targets_remaining = get_tree().get_nodes_in_group("level_targets").size()
+	var tree := get_tree()
+	if not tree:
+		return
+	targets_remaining = tree.get_nodes_in_group("level_targets").size()
 	if targets_remaining == 0 and not level_finished:
 		_show_win_panel()
 
@@ -145,6 +148,8 @@ func _on_ammo_changed(remaining_ammo: int) -> void:
 func _on_ball_fired(ball: RigidBody3D, _launch_velocity: Vector3) -> void:
 	active_balls.append(ball)
 	ball.tree_exited.connect(_on_ball_exited.bind(ball))
+	if ball.has_signal("landed"):
+		ball.landed.connect(_on_ball_exited.bind(ball))
 
 
 func _on_ball_exited(ball: Node) -> void:
@@ -154,10 +159,13 @@ func _on_ball_exited(ball: Node) -> void:
 
 func _check_lose_condition() -> void:
 	if ammo_remaining == 0 and active_balls.is_empty() and not level_finished and not _is_waiting_lose:
+		var tree := get_tree()
+		if not tree:
+			return
 		_check_level_state()
 		if not level_finished:
 			_is_waiting_lose = true
-			await get_tree().create_timer(0.015).timeout
+			await tree.create_timer(0.0001).timeout
 			if not level_finished:
 				_show_lose_panel()
 			_is_waiting_lose = false

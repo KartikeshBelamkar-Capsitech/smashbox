@@ -16,7 +16,7 @@ signal power_up_used(power_up: int)
 ## The projectile scene used for fire/explode power-up.
 @export var fire_ball_scene: PackedScene = preload("res://scenes/fire_ball.tscn")
 ## Speed at which balls are propelled outward.
-@export_range(10.0, 120.0, 1.0) var launch_speed: float = 50.0
+@export_range(10.0, 120.0, 1.0) var launch_speed: float = 30.0
 ## Optional explicit parent node where spawned balls will be added. If null, uses the active scene root.
 @export var projectile_container: Node3D = null
 
