@@ -39,9 +39,10 @@ signal power_up_used(power_up: int)
 ## Distance in front of cannon where the virtual targeting plane is positioned (matches box stack distance).
 @export var aim_plane_distance: float = 12.0
 ## Yaw limits in degrees relative to initial rotation (Min: Left, Max: Right).
-@export var yaw_limits_deg: Vector2 = Vector2(-85.0, 85.0)
+@export var yaw_limits_deg: Vector2 = Vector2(-42.0, 42.0)
 ## Pitch limits in degrees (Min: Downwards, Max: Upwards).
-@export var pitch_limits_deg: Vector2 = Vector2(-55.0, 55.0)
+## Downward limit (-14.0 deg) strictly prevents the cannon from tilting off camera when aiming low.
+@export var pitch_limits_deg: Vector2 = Vector2(-14.0, 32.0)
 
 @export_group("Node References")
 ## Marker indicating where balls spawn and their initial forward trajectory.
@@ -120,6 +121,7 @@ func _process(delta: float) -> void:
 				_is_holding_screen = false
 			else:
 				_update_aim_target_from_screen(_current_pointer_pos)
+				_snap_aim_to_target()
 				shoot()
 
 
@@ -371,15 +373,14 @@ func _get_compensated_target(target_pt: Vector3) -> Vector3:
 	return target_pt + Vector3(0.0, vertical_drop, 0.0)
 
 
-## Calculates the normalized forward vector pointing directly toward the target aim point with ballistic compensation.
+## Calculates the normalized forward vector pointing directly toward the target aim point,
+## strictly bounded by the cannon's pitch and yaw angle limits so projectiles fire exactly where the barrel points.
 func _get_shooting_direction() -> Vector3:
-	var origin: Vector3 = muzzle.global_position if muzzle else global_position
-	if _target_aim_point != Vector3.ZERO:
-		var compensated: Vector3 = _get_compensated_target(_target_aim_point)
-		return (compensated - origin).normalized()
 	if muzzle:
 		return -muzzle.global_transform.basis.z.normalized()
-	return -global_transform.basis.z.normalized()
+	var rx: float = rotation.x
+	var ry: float = rotation.y
+	return Vector3(-sin(ry) * cos(rx), sin(rx), -cos(ry) * cos(rx)).normalized()
 
 
 ## Spawns the projectile into the scene hierarchy.
@@ -505,6 +506,9 @@ func _snap_aim_to_target() -> void:
 	var angles: Vector2 = _get_target_angles(_target_aim_point)
 	rotation.y = angles.x
 	rotation.x = angles.y
+	force_update_transform()
+	if muzzle:
+		muzzle.force_update_transform()
 
 
 ## Smoothly rotates the cannon towards the target point with angle limits.
