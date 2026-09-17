@@ -47,6 +47,11 @@ func _physics_process(delta: float) -> void:
 	if _is_despawning:
 		return
 		
+	_life_timer += delta
+	if _life_timer >= lifetime or global_position.y <= despawn_y_threshold:
+		despawn()
+		return
+		
 	# Virtual floor check must happen even if it bounced off the platform
 	if global_position.y <= 0.22:
 		global_position.y = 0.22
@@ -57,14 +62,6 @@ func _physics_process(delta: float) -> void:
 		if not _landed:
 			_landed = true
 			landed.emit()
-		return
-		
-	if _landed:
-		return
-		
-	_life_timer += delta
-	if _life_timer >= lifetime or global_position.y <= despawn_y_threshold:
-		despawn()
 
 
 
