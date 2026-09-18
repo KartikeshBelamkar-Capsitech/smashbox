@@ -18,6 +18,7 @@ var _style_right_active: StyleBoxFlat
 
 var _left_pulse_tween: Tween
 var _right_pulse_tween: Tween
+var _current_power_up: int = PowerUp.Type.NONE
 
 
 func _ready() -> void:
@@ -30,6 +31,9 @@ func _ready() -> void:
 		right_btn.mouse_filter = Control.MOUSE_FILTER_STOP
 		right_btn.pressed.connect(_on_right_button_pressed)
 		
+	if Events:
+		Events.power_up_changed.connect(_on_cannon_power_up_changed)
+
 	if not cannon:
 		_find_cannon()
 		
@@ -38,6 +42,16 @@ func _ready() -> void:
 		
 	_update_ui_state(PowerUp.Type.NONE)
 	_auto_configure_for_level()
+
+
+## Configures power-up visibility using structured LevelData.
+func configure_for_level_data(data: LevelData) -> void:
+	if not data:
+		return
+	if right_btn:
+		right_btn.visible = (PowerUp.Type.TRIPLE_SHOT in data.available_power_ups)
+	if left_btn:
+		left_btn.visible = (PowerUp.Type.FIRE_EXPLODE in data.available_power_ups)
 
 
 ## Configures power-up visibility according to level progression:
@@ -55,6 +69,12 @@ func configure_for_level(level_number: int) -> void:
 
 
 func _auto_configure_for_level() -> void:
+	if LevelManager:
+		var cur_data := LevelManager.get_current_level_data()
+		if cur_data:
+			configure_for_level_data(cur_data)
+			return
+
 	var path: String = ""
 	if get_tree() and get_tree().current_scene:
 		path = get_tree().current_scene.scene_file_path
@@ -137,33 +157,24 @@ func _init_styles() -> void:
 
 func _on_left_button_pressed() -> void:
 	HapticManager.play_button_click()
-	if not cannon:
-		_find_cannon()
-	if not cannon:
-		return
-		
-	# Toggle left power-up
-	if cannon.get_power_up() == PowerUp.Type.FIRE_EXPLODE:
-		cannon.set_power_up(PowerUp.Type.NONE)
-	else:
-		cannon.set_power_up(PowerUp.Type.FIRE_EXPLODE)
+	var next_type: int = PowerUp.Type.NONE if _current_power_up == PowerUp.Type.FIRE_EXPLODE else PowerUp.Type.FIRE_EXPLODE
+	if Events:
+		Events.power_up_selected.emit(next_type)
+	if cannon:
+		cannon.set_power_up(next_type)
 
 
 func _on_right_button_pressed() -> void:
 	HapticManager.play_button_click()
-	if not cannon:
-		_find_cannon()
-	if not cannon:
-		return
-		
-	# Toggle right power-up
-	if cannon.get_power_up() == PowerUp.Type.TRIPLE_SHOT:
-		cannon.set_power_up(PowerUp.Type.NONE)
-	else:
-		cannon.set_power_up(PowerUp.Type.TRIPLE_SHOT)
+	var next_type: int = PowerUp.Type.NONE if _current_power_up == PowerUp.Type.TRIPLE_SHOT else PowerUp.Type.TRIPLE_SHOT
+	if Events:
+		Events.power_up_selected.emit(next_type)
+	if cannon:
+		cannon.set_power_up(next_type)
 
 
 func _on_cannon_power_up_changed(new_power_up: int) -> void:
+	_current_power_up = new_power_up
 	_update_ui_state(new_power_up)
 
 

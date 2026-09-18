@@ -70,6 +70,10 @@ var _current_pointer_pos: Vector2 = Vector2.ZERO
 
 
 func _ready() -> void:
+	if LevelManager:
+		var lvl_data: LevelData = LevelManager.get_current_level_data()
+		if lvl_data:
+			max_ammo = lvl_data.max_ammo
 	current_ammo = max_ammo
 	_initial_rotation_y = rotation.y
 	_cannon_fixed_pos = position
@@ -90,6 +94,11 @@ func _ready() -> void:
 		
 	if not muzzle_effect:
 		muzzle_effect = find_child("MuzzleEffect", true, false) as MuzzleEffect
+
+	if Events:
+		Events.power_up_selected.connect(set_power_up)
+		Events.camera_shake_requested.connect(trigger_camera_shake)
+		Events.ammo_changed.emit(current_ammo, max_ammo)
 
 
 func _notification(what: int) -> void:
@@ -179,6 +188,8 @@ func _unhandled_input(event: InputEvent) -> void:
 func set_power_up(p_type: int) -> void:
 	active_power_up = p_type
 	power_up_changed.emit(active_power_up)
+	if Events:
+		Events.power_up_changed.emit(active_power_up)
 
 
 ## Gets the current active power-up.
@@ -198,24 +209,34 @@ func shoot() -> bool:
 		active_power_up = PowerUp.Type.NONE
 		power_up_used.emit(power_fired)
 		power_up_changed.emit(active_power_up)
+		if Events:
+			Events.power_up_used.emit(power_fired)
+			Events.power_up_changed.emit(active_power_up)
 		return _shoot_fire_explode()
 	elif active_power_up == PowerUp.Type.TRIPLE_SHOT:
 		var power_fired: int = active_power_up
 		active_power_up = PowerUp.Type.NONE
 		power_up_used.emit(power_fired)
 		power_up_changed.emit(active_power_up)
+		if Events:
+			Events.power_up_used.emit(power_fired)
+			Events.power_up_changed.emit(active_power_up)
 		_shoot_triple_burst()
 		return true
 		
 	if not infinite_ammo:
 		if current_ammo <= 0:
 			out_of_ammo.emit()
+			if Events:
+				Events.out_of_ammo.emit()
 			if auto_reload:
 				reload()
 			return false
 			
 		current_ammo -= 1
 		ammo_changed.emit(current_ammo)
+		if Events:
+			Events.ammo_changed.emit(current_ammo, max_ammo)
 		
 	# Reset cooldown
 	_cooldown_timer = fire_cooldown
@@ -230,6 +251,8 @@ func shoot() -> bool:
 			ball.linear_velocity = shoot_dir * launch_speed
 			
 		ball_fired.emit(ball, shoot_dir * launch_speed)
+		if Events:
+			Events.ball_fired.emit(ball, shoot_dir * launch_speed)
 		
 	# Play recoil juice, muzzle blast, and mobile haptic pulse
 	_trigger_recoil()
@@ -246,11 +269,15 @@ func _shoot_fire_explode() -> bool:
 	if not infinite_ammo:
 		if current_ammo <= 0:
 			out_of_ammo.emit()
+			if Events:
+				Events.out_of_ammo.emit()
 			if auto_reload:
 				reload()
 			return false
 		current_ammo -= 1
 		ammo_changed.emit(current_ammo)
+		if Events:
+			Events.ammo_changed.emit(current_ammo, max_ammo)
 		
 	_cooldown_timer = fire_cooldown
 	
@@ -272,6 +299,8 @@ func _shoot_fire_explode() -> bool:
 			ball_node.linear_velocity = shoot_dir * launch_speed * 1.05
 			
 		ball_fired.emit(ball_node, shoot_dir * launch_speed * 1.05)
+		if Events:
+			Events.ball_fired.emit(ball_node, shoot_dir * launch_speed * 1.05)
 		
 	_trigger_recoil()
 	if muzzle_effect:
@@ -286,11 +315,15 @@ func _shoot_triple_burst() -> void:
 	if not infinite_ammo:
 		if current_ammo <= 0:
 			out_of_ammo.emit()
+			if Events:
+				Events.out_of_ammo.emit()
 			if auto_reload:
 				reload()
 			return
 		current_ammo -= 1
 		ammo_changed.emit(current_ammo)
+		if Events:
+			Events.ammo_changed.emit(current_ammo, max_ammo)
 		
 	_is_burst_firing = true
 	_cooldown_timer = fire_cooldown + 0.35
@@ -306,6 +339,8 @@ func _shoot_triple_burst() -> void:
 			else:
 				ball.linear_velocity = spread_dir * launch_speed
 			ball_fired.emit(ball, spread_dir * launch_speed)
+			if Events:
+				Events.ball_fired.emit(ball, spread_dir * launch_speed)
 			
 		_trigger_recoil()
 		if muzzle_effect:
@@ -358,6 +393,9 @@ func reload() -> void:
 		is_reloading = false
 		ammo_changed.emit(current_ammo)
 		reloaded.emit()
+		if Events:
+			Events.ammo_changed.emit(current_ammo, max_ammo)
+			Events.reloaded.emit()
 	)
 
 

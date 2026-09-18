@@ -30,6 +30,12 @@ var power_up_buttons_instance: Control = null
 
 
 func _ready() -> void:
+	if LevelManager:
+		var cur_data := LevelManager.get_current_level_data()
+		if cur_data:
+			level_title = cur_data.title
+			ammo_remaining = cur_data.max_ammo
+			
 	if title_label:
 		title_label.text = level_title
 
@@ -41,6 +47,25 @@ func _ready() -> void:
 		restart_btn.pressed.connect(_on_restart_pressed)
 		
 	_spawn_power_up_buttons()
+
+	_create_ammo_label()
+	if cannon:
+		ammo_remaining = cannon.current_ammo
+	
+	_on_ammo_changed(ammo_remaining)
+
+	if Events:
+		Events.ammo_changed.connect(_on_bus_ammo_changed)
+		Events.ball_fired.connect(_on_ball_fired)
+	elif cannon:
+		cannon.ammo_changed.connect(_on_ammo_changed)
+		cannon.ball_fired.connect(_on_ball_fired)
+
+	call_deferred("_check_level_state")
+
+
+func _on_bus_ammo_changed(remaining_ammo: int, _max_ammo: int) -> void:
+	_on_ammo_changed(remaining_ammo)
 
 
 func _spawn_power_up_buttons() -> void:
@@ -56,33 +81,24 @@ func _spawn_power_up_buttons() -> void:
 		if cannon_node and power_up_buttons_instance.has_method("set_cannon"):
 			power_up_buttons_instance.call("set_cannon", cannon_node)
 			
-		var lvl_num: int = _get_current_level_number()
-		if power_up_buttons_instance.has_method("configure_for_level"):
-			power_up_buttons_instance.call("configure_for_level", lvl_num)
-			
-		# Check if this level unlocks a milestone power-up (Level 4: Triple, Level 7: Explode)
-		_check_power_up_unlock_celebration(lvl_num)
-
-	_create_ammo_label()
-	if cannon:
-		cannon.ammo_changed.connect(_on_ammo_changed)
-		cannon.ball_fired.connect(_on_ball_fired)
-		_on_ammo_changed(cannon.current_ammo)
-
-	call_deferred("_check_level_state")
-
-
-func _check_power_up_unlock_celebration(lvl_num: int) -> void:
-	if not unlock_modal_scene:
-		return
+		var cur_data: LevelData = LevelManager.get_current_level_data() if LevelManager else null
 		
-	var power_up_to_unlock: int = PowerUp.Type.NONE
-	if lvl_num == 4:
-		power_up_to_unlock = PowerUp.Type.TRIPLE_SHOT
-	elif lvl_num == 7:
-		power_up_to_unlock = PowerUp.Type.FIRE_EXPLODE
-		
-	if power_up_to_unlock == PowerUp.Type.NONE:
+		if cur_data:
+			if power_up_buttons_instance.has_method("configure_for_level_data"):
+				power_up_buttons_instance.call("configure_for_level_data", cur_data)
+			elif power_up_buttons_instance.has_method("configure_for_level"):
+				power_up_buttons_instance.call("configure_for_level", cur_data.level_id)
+			_check_power_up_unlock_celebration(cur_data.milestone_unlock)
+		else:
+			var lvl_num: int = _get_current_level_number()
+			if power_up_buttons_instance.has_method("configure_for_level"):
+				power_up_buttons_instance.call("configure_for_level", lvl_num)
+			var fallback_milestone: int = PowerUp.Type.TRIPLE_SHOT if lvl_num == 4 else (PowerUp.Type.FIRE_EXPLODE if lvl_num == 7 else PowerUp.Type.NONE)
+			_check_power_up_unlock_celebration(fallback_milestone)
+
+
+func _check_power_up_unlock_celebration(power_up_to_unlock: int) -> void:
+	if not unlock_modal_scene or power_up_to_unlock == PowerUp.Type.NONE:
 		return
 		
 	# Prevent firing while modal is open
@@ -146,6 +162,8 @@ func _on_ammo_changed(remaining_ammo: int) -> void:
 
 
 func _on_ball_fired(ball: RigidBody3D, _launch_velocity: Vector3) -> void:
+	if not ball or active_balls.has(ball):
+		return
 	active_balls.append(ball)
 	ball.tree_exited.connect(_on_ball_exited.bind(ball))
 	if ball.has_signal("landed"):
@@ -153,12 +171,23 @@ func _on_ball_fired(ball: RigidBody3D, _launch_velocity: Vector3) -> void:
 
 
 func _on_ball_exited(ball: Node) -> void:
-	active_balls.erase(ball)
+	while active_balls.has(ball):
+		active_balls.erase(ball)
+	_clean_active_balls()
 	_check_lose_condition()
 
 
+func _clean_active_balls() -> void:
+	var valid: Array[Node] = []
+	for b in active_balls:
+		if is_instance_valid(b) and not b.is_queued_for_deletion():
+			valid.append(b)
+	active_balls = valid
+
+
 func _check_lose_condition() -> void:
-	if ammo_remaining == 0 and active_balls.is_empty() and not level_finished and not _is_waiting_lose:
+	_clean_active_balls()
+	if ammo_remaining <= 0 and active_balls.is_empty() and not level_finished and not _is_waiting_lose:
 		var tree := get_tree()
 		if not tree:
 			return
@@ -172,7 +201,8 @@ func _check_lose_condition() -> void:
 				_check_level_state()
 				if level_finished or not _are_targets_moving():
 					break
-			if not level_finished and ammo_remaining == 0 and active_balls.is_empty():
+			_clean_active_balls()
+			if not level_finished and ammo_remaining <= 0 and active_balls.is_empty():
 				_show_lose_panel()
 			_is_waiting_lose = false
 
@@ -198,6 +228,7 @@ func _create_ammo_label() -> void:
 	ammo_label.add_theme_color_override("font_color", Color(0.95, 0.97, 1, 1))
 	ammo_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	ammo_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	ammo_label.text = str(ammo_remaining)
 	var badge := StyleBoxFlat.new()
 	badge.bg_color = Color(0.08, 0.16, 0.25, 0.96)
 	badge.border_color = Color(0.35, 0.7, 0.95, 0.9)
@@ -213,7 +244,14 @@ func _show_win_panel() -> void:
 		cannon.set_process_unhandled_input(false)
 		cannon.stop_continuous_shooting()
 	HapticManager.play_win(get_tree())
-	var button_text: String = "QUIT" if next_scene_path.is_empty() else "NEXT LEVEL"
+	var button_text: String = "QUIT"
+	if LevelManager:
+		button_text = "NEXT LEVEL" if LevelManager.has_next_level() else "QUIT"
+	elif not next_scene_path.is_empty():
+		button_text = "NEXT LEVEL"
+	if Events:
+		var cur_data: LevelData = LevelManager.get_current_level_data() if LevelManager else null
+		Events.level_won.emit(cur_data)
 	_show_result_panel("YOU WIN!", button_text, _on_win_action_pressed)
 
 
@@ -223,6 +261,9 @@ func _show_lose_panel() -> void:
 		cannon.set_process_unhandled_input(false)
 		cannon.stop_continuous_shooting()
 	HapticManager.play_lose()
+	if Events:
+		var cur_data: LevelData = LevelManager.get_current_level_data() if LevelManager else null
+		Events.level_lost.emit(cur_data)
 	_show_result_panel("YOU LOSE!", "PLAY AGAIN", _on_play_again_pressed)
 
 
@@ -281,12 +322,17 @@ func _show_result_panel(result_text: String, button_text: String, action: Callab
 
 func _on_play_again_pressed() -> void:
 	HapticManager.play_button_click()
-	get_tree().reload_current_scene()
+	if LevelManager:
+		LevelManager.restart_current_level()
+	else:
+		get_tree().reload_current_scene()
 
 
 func _on_win_action_pressed() -> void:
 	HapticManager.play_button_click()
-	if next_scene_path.is_empty():
+	if LevelManager:
+		LevelManager.load_next_level()
+	elif next_scene_path.is_empty():
 		get_tree().change_scene_to_file(HOME_SCENE_PATH)
 	else:
 		get_tree().change_scene_to_file(next_scene_path)
@@ -294,4 +340,7 @@ func _on_win_action_pressed() -> void:
 
 func _on_restart_pressed() -> void:
 	HapticManager.play_button_click()
-	get_tree().reload_current_scene()
+	if LevelManager:
+		LevelManager.restart_current_level()
+	else:
+		get_tree().reload_current_scene()
